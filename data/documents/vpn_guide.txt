@@ -1,0 +1,22 @@
+VPN Connection Troubleshooting Guide
+
+Category: Network
+Document ID: IT-NET-001
+
+Problem:
+Employees cannot connect to the company VPN.
+
+Possible Causes:
+1. Incorrect username or password.
+2. VPN server is unavailable.
+3. Network connection is unstable.
+4. VPN client configuration is incorrect.
+
+Solutions:
+1. Check your username and password.
+2. Restart the VPN client.
+3. Check whether the VPN server is running.
+4. Contact the IT support team if the problem persists.
+
+Additional Information:
+If the VPN connection continues to fail, create an IT support ticket and provide the error message.
