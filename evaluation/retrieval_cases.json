@@ -1,0 +1,26 @@
+[
+  {
+    "query": "公司 VPN 连接不上怎么办？",
+    "expected_source": "vpn_guide_zh.txt"
+  },
+  {
+    "query": "远程办公时一直提示身份验证失败，应该检查什么？",
+    "expected_source": "vpn_guide_zh.txt"
+  },
+  {
+    "query": "打印机显示离线怎么办？",
+    "expected_source": "printer_guide_zh.txt"
+  },
+  {
+    "query": "文件发送打印后一直在队列里等待，怎么处理？",
+    "expected_source": "printer_guide_zh.txt"
+  },
+  {
+    "query": "公司员工如何申请年假？",
+    "expected_source": null
+  },
+  {
+    "query": "公司邮箱收不到邮件应该怎么办？",
+    "expected_source": null
+  }
+]
