@@ -1,114 +1,87 @@
 import json
 from pathlib import Path
-from embeddings.embedder import LocalEmbedder
-from ingestion.chunker import DocumentChunker
-from ingestion.loader import DocumentLoader
+
+from ingestion.knowledge_base import build_knowledge_base
+from project_config import ProjectConfig
 from retrieval.retriever import KnowledgeRetriever
-from vectorstore.memory_store import InMemoryVectorStore
 
 
-def load_cases() -> list[dict]:
-    cases_path = Path(__file__).resolve().parent / "retrieval_cases.json"
-
-    with cases_path.open("r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def build_retriever() -> KnowledgeRetriever:
-    project_root = Path(__file__).resolve().parent.parent
-    documents_dir = project_root / "data" / "documents"
-
-    loader = DocumentLoader()
-    chunker = DocumentChunker(chunk_size=300, overlap=50)
-
-    chunks = []
-    for filename in ["vpn_guide_zh.txt", "printer_guide_zh.txt"]:
-        document = loader.load_txt(documents_dir / filename)
-        chunks.extend(chunker.chunk_document(document))
-
-    print("正在加载模型……")
-    embedder = LocalEmbedder()
-
-    print("正在生成资料向量……")
-    items = embedder.embed_chunks(chunks)
-
-    store = InMemoryVectorStore()
-    store.add(items)
-
-    return KnowledgeRetriever(embedder=embedder, store=store)
+def load_cases(path: Path | None = None) -> list[dict]:
+    path = path if path is not None else Path(__file__).resolve().parent / "retrieval_cases.json"
+    cases = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(cases, list) or not cases:
+        raise ValueError("Evaluation cases must be a nonempty list.")
+    for case in cases:
+        if not isinstance(case, dict) or not isinstance(case.get("query"), str) or not case["query"].strip():
+            raise ValueError("Each case must contain a nonempty query.")
+        if "expected_source" not in case:
+            raise ValueError("Each case must contain expected_source.")
+        source = case["expected_source"]
+        if source is not None and (not isinstance(source, str) or not source.strip()):
+            raise ValueError("expected_source must be a nonempty string or null.")
+    return cases
 
 
-def main():
-    cases = load_cases()
-    retriever = build_retriever()
-
-    print("资料库片段数量：", retriever.store.count())
-    print("评估问题数量：", len(cases))
-
-    passed_count = 0
-
+def evaluate_cases(
+    cases: list[dict],
+    retriever: KnowledgeRetriever,
+    config: ProjectConfig,
+) -> dict:
     records = []
-
-    for index, case in enumerate(cases, start=1):
+    for case in cases:
         results = retriever.retrieve(
-            case["query"],
-            top_k=3,
-            min_score=0.5,
+            case["query"], top_k=config.top_k, min_score=config.min_score,
         )
-
-        actual_source = None
-        if results:
-            actual_source = results[0].chunk.metadata["source"]
-
-        passed = actual_source == case["expected_source"]
-
+        first = results[0] if results else None
+        actual_source = first.chunk.metadata["source"] if first else None
         records.append({
             "query": case["query"],
             "expected_source": case["expected_source"],
             "actual_source": actual_source,
-            "top_score": results[0].score if results else None,
-            "passed": passed,
+            "top_score": first.score if first else None,
+            "top_chunk_index": first.chunk.chunk_index if first else None,
+            "top_content": first.chunk.content if first else None,
+            "passed": actual_source == case["expected_source"],
         })
-
-        if passed:
-            passed_count += 1
-
-        print("-" * 60)
-        print("题号：", index)
-        print("问题：", case["query"])
-        print("预期来源：", case["expected_source"])
-        print("实际第一名来源：", actual_source)
-
-        if results:
-            print("第一名分数：", f"{results[0].score:.4f}")
-        else:
-            print("没有结果达到当前门槛。")
-
-        print("检查结果：", "通过" if passed else "未通过")
-
-    print("=" * 60)
-    print(f"符合预期：{passed_count}/{len(cases)}")
-
-    if cases:
-        pass_rate = passed_count / len(cases)
-        print(f"本题集通过率：{pass_rate:.1%}")
-
-        report = {
-        "model": "Qwen/Qwen3-Embedding-0.6B",
-        "chunk_size": 300,
-        "overlap": 50,
-        "top_k": 3,
-        "min_score": 0.5,
-        "total": len(cases),
-        "passed": passed_count,
+    return {
+        **config.to_report(),
+        "total": len(records),
+        "passed": sum(record["passed"] for record in records),
         "cases": records,
     }
 
-    report_path = Path(__file__).resolve().parent / "retrieval_report.json"
 
-    with report_path.open("w", encoding="utf-8") as file:
-        json.dump(report, file, ensure_ascii=False, indent=2)
+def save_report(report: dict, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
+
+def main():
+    config = ProjectConfig()
+    cases = load_cases()
+    print("正在构建知识库，请稍候……")
+    knowledge = build_knowledge_base(config)
+    print("文档数量：", knowledge.document_count)
+    print("资料片段数量：", knowledge.chunk_count)
+    report = evaluate_cases(cases, knowledge.retriever, config)
+    for index, record in enumerate(report["cases"], start=1):
+        print("-" * 60)
+        print("题号：", index)
+        print("问题：", record["query"])
+        print("预期来源：", record["expected_source"])
+        print("实际第一名来源：", record["actual_source"])
+        score = record["top_score"]
+        print("第一名分数：", f"{score:.4f}" if score is not None else "无结果")
+        print("检查结果：", "通过" if record["passed"] else "未通过")
+
+    print("=" * 60)
+    print(f"符合预期：{report['passed']}/{report['total']}")
+    print(f"本题集通过率：{report['passed'] / report['total']:.1%}")
+    report_path = Path(__file__).resolve().parent / f"retrieval_report_{config.chunk_mode}.json"
+    save_report(report, report_path)
     print("评估报告已保存：", report_path)
 
 

@@ -1,0 +1,71 @@
+{
+  "model": "Qwen/Qwen3-Embedding-0.6B",
+  "documents_dir": "E:\\Code\\project\\IT-Service-Desk-Agent\\data\\documents",
+  "file_names": [
+    "vpn_guide_zh.txt",
+    "printer_guide_zh.txt"
+  ],
+  "chunk_mode": "boundary",
+  "chunk_size": 300,
+  "overlap": 50,
+  "top_k": 3,
+  "min_score": 0.5,
+  "total": 6,
+  "passed": 6,
+  "cases": [
+    {
+      "query": "公司 VPN 连接不上怎么办？",
+      "expected_source": "vpn_guide_zh.txt",
+      "actual_source": "vpn_guide_zh.txt",
+      "top_score": 0.826652062555406,
+      "top_chunk_index": 0,
+      "top_content": "\n公司 VPN 连接故障排查指南\n\n适用问题：\n员工无法连接公司 VPN，或者连接过程中反复断开。\n\n排查步骤：\n1. 检查电脑是否能够正常访问互联网。如果普通网页也无法打开，先处理本地网络问题。\n2. 检查 VPN 账号和密码是否正确，确认账号没有被锁定或停用。\n3. 完全退出 VPN 客户端，然后重新打开并尝试连接。\n4. 确认 VPN 客户端中的服务器地址与公司提供的地址一致。\n5. 如果提示身份验证失败，检查密码是否过期，以及多因素验证是否完成。\n6. 如果多名同事同时无法连接，联系 IT 支持人员确认 VPN 服务是否正常。\n\n提交工单：\n",
+      "passed": true
+    },
+    {
+      "query": "远程办公时一直提示身份验证失败，应该检查什么？",
+      "expected_source": "vpn_guide_zh.txt",
+      "actual_source": "vpn_guide_zh.txt",
+      "top_score": 0.5601019466166274,
+      "top_chunk_index": 1,
+      "top_content": "\n6. 如果多名同事同时无法连接，联系 IT 支持人员确认 VPN 服务是否正常。\n\n提交工单：\n如果完成上述检查后仍然无法连接，请向 IT 支持团队提交工单。\n工单中应提供错误提示、发生时间、操作系统和 VPN 客户端版本。\n不要在工单中提供账号密码或验证码。",
+      "passed": true
+    },
+    {
+      "query": "打印机显示离线怎么办？",
+      "expected_source": "printer_guide_zh.txt",
+      "actual_source": "printer_guide_zh.txt",
+      "top_score": 0.6397954466415543,
+      "top_chunk_index": 1,
+      "top_content": "\n\n提交工单：\n如果完成上述检查后仍然无法打印，请向 IT 支持团队提交工单。\n工单中应提供打印机名称、设备位置、错误提示和发生时间。",
+      "passed": true
+    },
+    {
+      "query": "文件发送打印后一直在队列里等待，怎么处理？",
+      "expected_source": "printer_guide_zh.txt",
+      "actual_source": "printer_guide_zh.txt",
+      "top_score": 0.5924988136397714,
+      "top_chunk_index": 0,
+      "top_content": "公司打印机故障排查指南\n\n适用问题：\n员工无法打印文件，打印任务一直等待，或者打印机显示离线。\n\n排查步骤：\n1. 检查打印机是否已经开机，屏幕上是否显示缺纸、缺墨或卡纸。\n2. 确认电脑选择的是需要使用的打印机，避免将文件发送到其他设备。\n3. 如果打印机显示离线，检查打印机的网络连接是否正常。\n4. 打开电脑的打印队列，取消已经卡住的任务，然后重新打印。\n5. 尝试打印测试页，判断问题是否只发生在某个文件中。\n6. 如果多名同事都无法使用同一台打印机，联系 IT 支持人员检查设备。\n\n提交工单：\n如果完成上述检查后仍然无法打印，请向 IT 支持团队提交工单。\n",
+      "passed": true
+    },
+    {
+      "query": "公司员工如何申请年假？",
+      "expected_source": null,
+      "actual_source": null,
+      "top_score": null,
+      "top_chunk_index": null,
+      "top_content": null,
+      "passed": true
+    },
+    {
+      "query": "公司邮箱收不到邮件应该怎么办？",
+      "expected_source": null,
+      "actual_source": null,
+      "top_score": null,
+      "top_chunk_index": null,
+      "top_content": null,
+      "passed": true
+    }
+  ]
+}
