@@ -1,0 +1,146 @@
+[
+  {
+    "id": "case-01",
+    "query": "VPN连接不上怎么办？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-02",
+    "query": "VPN身份验证失败要检查什么？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-03",
+    "query": "VPN账号是否可能被锁定？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-04",
+    "query": "VPN服务器地址应该如何检查？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-05",
+    "query": "多人同时无法连接VPN找谁？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-06",
+    "query": "VPN工单需要填写哪些信息？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-07",
+    "query": "VPN工单可以附上密码吗？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-08",
+    "query": "VPN连接失败，普通网页也打不开怎么办？",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-09",
+    "query": "打印机离线怎么办？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-10",
+    "query": "打印队列一直等待怎么办？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-11",
+    "query": "打印机缺纸或卡纸应检查什么？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-12",
+    "query": "文件发送到错误的打印机怎么办？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-13",
+    "query": "如何判断打印故障是否只影响一个文件？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-14",
+    "query": "所有同事都无法打印怎么办？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-15",
+    "query": "打印机工单需要什么信息？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-16",
+    "query": "打印故障是否应该尝试测试页？",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-17",
+    "query": "How do I troubleshoot a VPN connection failure?",
+    "expected_source": "vpn_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-18",
+    "query": "What information belongs in a printer support ticket?",
+    "expected_source": "printer_guide_zh.txt",
+    "answerable": true
+  },
+  {
+    "id": "case-19",
+    "query": "公司员工如何申请年假？",
+    "expected_source": null,
+    "answerable": false
+  },
+  {
+    "id": "case-20",
+    "query": "公司邮箱无法接收邮件怎么办？",
+    "expected_source": null,
+    "answerable": false
+  },
+  {
+    "id": "case-21",
+    "query": "VPN服务器具体IP地址是多少？",
+    "expected_source": null,
+    "answerable": false
+  },
+  {
+    "id": "case-22",
+    "query": "打印机管理员密码是多少？",
+    "expected_source": null,
+    "answerable": false
+  },
+  {
+    "id": "case-23",
+    "query": "VPN怎么安装？",
+    "expected_source": null,
+    "answerable": false
+  },
+  {
+    "id": "case-24",
+    "query": "公司打印机采购预算是多少？",
+    "expected_source": null,
+    "answerable": false
+  }
+]

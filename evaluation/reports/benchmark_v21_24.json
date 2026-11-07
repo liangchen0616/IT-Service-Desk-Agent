@@ -1,0 +1,2635 @@
+{
+  "created_at": "2026-11-07T10:01:43.700443+00:00",
+  "python": "3.13.15",
+  "config": {
+    "model": "Qwen/Qwen3-Embedding-0.6B",
+    "documents_dir": "E:\\Code\\project\\IT-Service-Desk-Agent\\data\\documents",
+    "file_names": [
+      "vpn_guide_zh.txt",
+      "printer_guide_zh.txt"
+    ],
+    "chunk_mode": "boundary",
+    "chunk_size": 300,
+    "overlap": 50,
+    "top_k": 3,
+    "min_score": 0.5,
+    "index_path": "E:\\Code\\project\\IT-Service-Desk-Agent\\data\\indexes\\knowledge_base.json"
+  },
+  "corpus_signature": "6b23634fe2b0a9684ea11f7b0fe800d564861d3cd1a9052b62645eb2bde4f5a4",
+  "dataset_sha256": "e16176c2b6e12d7228bbff571dfe5400616b2355d5a46e0b16a9cc01c1332832",
+  "notes": "Source-level metrics on 2 documents; not chunk recall or factual-answer quality. Negative retrieval candidates are not hallucinations. Unthresholded top-k comparison. Timings include query embedding but exclude startup.",
+  "retrieval": {
+    "faiss": {
+      "top_k": 3,
+      "positive_count": 18,
+      "source_hit_at_k": 1.0,
+      "source_top1": 1.0,
+      "source_mrr": 1.0,
+      "mean_ms": 608.4144041668272,
+      "cases": [
+        {
+          "id": "case-01",
+          "query": "VPN连接不上怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 582.3047000012593,
+          "scores": [
+            0.7832534313201904,
+            0.7505065202713013,
+            0.418228417634964
+          ]
+        },
+        {
+          "id": "case-02",
+          "query": "VPN身份验证失败要检查什么？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 602.0972000005713,
+          "scores": [
+            0.6400275230407715,
+            0.6348531246185303,
+            0.41218191385269165
+          ]
+        },
+        {
+          "id": "case-03",
+          "query": "VPN账号是否可能被锁定？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 581.4547000009043,
+          "scores": [
+            0.5188659429550171,
+            0.4636492133140564,
+            0.17309387028217316
+          ]
+        },
+        {
+          "id": "case-04",
+          "query": "VPN服务器地址应该如何检查？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 561.1199000013585,
+          "scores": [
+            0.5174684524536133,
+            0.5168721675872803,
+            0.3110120892524719
+          ]
+        },
+        {
+          "id": "case-05",
+          "query": "多人同时无法连接VPN找谁？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 606.2512999997125,
+          "scores": [
+            0.7623038291931152,
+            0.6546884775161743,
+            0.3264443278312683
+          ]
+        },
+        {
+          "id": "case-06",
+          "query": "VPN工单需要填写哪些信息？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 606.4464999999473,
+          "scores": [
+            0.5865843296051025,
+            0.5225200653076172,
+            0.4141847491264343
+          ]
+        },
+        {
+          "id": "case-07",
+          "query": "VPN工单可以附上密码吗？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 619.1775999996025,
+          "scores": [
+            0.5666285157203674,
+            0.5034117698669434,
+            0.3803982734680176
+          ]
+        },
+        {
+          "id": "case-08",
+          "query": "VPN连接失败，普通网页也打不开怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 662.2695999994903,
+          "scores": [
+            0.6796498894691467,
+            0.6619530320167542,
+            0.4072991907596588
+          ]
+        },
+        {
+          "id": "case-09",
+          "query": "打印机离线怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 541.833699999188,
+          "scores": [
+            0.6326690912246704,
+            0.6178110837936401,
+            0.42338883876800537
+          ]
+        },
+        {
+          "id": "case-10",
+          "query": "打印队列一直等待怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 589.7215000004508,
+          "scores": [
+            0.5888833403587341,
+            0.5784609913825989,
+            0.39897483587265015
+          ]
+        },
+        {
+          "id": "case-11",
+          "query": "打印机缺纸或卡纸应检查什么？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 646.0424999986571,
+          "scores": [
+            0.6805742979049683,
+            0.6182273626327515,
+            0.3552332818508148
+          ]
+        },
+        {
+          "id": "case-12",
+          "query": "文件发送到错误的打印机怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 603.4963000001881,
+          "scores": [
+            0.7265695333480835,
+            0.6555227041244507,
+            0.4266570508480072
+          ]
+        },
+        {
+          "id": "case-13",
+          "query": "如何判断打印故障是否只影响一个文件？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 659.531600000264,
+          "scores": [
+            0.6416343450546265,
+            0.6051726341247559,
+            0.40525901317596436
+          ]
+        },
+        {
+          "id": "case-14",
+          "query": "所有同事都无法打印怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 577.6259000012942,
+          "scores": [
+            0.6635576486587524,
+            0.6486994624137878,
+            0.4960326552391052
+          ]
+        },
+        {
+          "id": "case-15",
+          "query": "打印机工单需要什么信息？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 590.8744000007573,
+          "scores": [
+            0.6800799369812012,
+            0.576897382736206,
+            0.36068934202194214
+          ]
+        },
+        {
+          "id": "case-16",
+          "query": "打印故障是否应该尝试测试页？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 606.4932999997836,
+          "scores": [
+            0.6809548139572144,
+            0.6070053577423096,
+            0.3888293504714966
+          ]
+        },
+        {
+          "id": "case-17",
+          "query": "How do I troubleshoot a VPN connection failure?",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 658.0826999997953,
+          "scores": [
+            0.7595036029815674,
+            0.7511510848999023,
+            0.4043956995010376
+          ]
+        },
+        {
+          "id": "case-18",
+          "query": "What information belongs in a printer support ticket?",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 630.4935999996815,
+          "scores": [
+            0.627618670463562,
+            0.48998603224754333,
+            0.3057423233985901
+          ]
+        },
+        {
+          "id": "case-19",
+          "query": "公司员工如何申请年假？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 591.3202000010642,
+          "scores": [
+            0.31145036220550537,
+            0.2941484749317169,
+            0.26382482051849365
+          ]
+        },
+        {
+          "id": "case-20",
+          "query": "公司邮箱无法接收邮件怎么办？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 670.4289999997854,
+          "scores": [
+            0.42782169580459595,
+            0.42301541566848755,
+            0.3947022259235382
+          ]
+        },
+        {
+          "id": "case-21",
+          "query": "VPN服务器具体IP地址是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 668.3828000004723,
+          "scores": [
+            0.46847182512283325,
+            0.4616040587425232,
+            0.2064153552055359
+          ]
+        },
+        {
+          "id": "case-22",
+          "query": "打印机管理员密码是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 581.7716000001383,
+          "scores": [
+            0.5258349180221558,
+            0.45283934473991394,
+            0.30309832096099854
+          ]
+        },
+        {
+          "id": "case-23",
+          "query": "VPN怎么安装？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 564.0920999994705,
+          "scores": [
+            0.4481244683265686,
+            0.4382261633872986,
+            0.22336041927337646
+          ]
+        },
+        {
+          "id": "case-24",
+          "query": "公司打印机采购预算是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 600.6330000000162,
+          "scores": [
+            0.46678584814071655,
+            0.39113831520080566,
+            0.20445938408374786
+          ]
+        }
+      ]
+    },
+    "bm25": {
+      "top_k": 3,
+      "positive_count": 18,
+      "source_hit_at_k": 0.9444444444444444,
+      "source_top1": 0.8888888888888888,
+      "source_mrr": 0.9166666666666666,
+      "mean_ms": 0.09952916684596858,
+      "cases": [
+        {
+          "id": "case-01",
+          "query": "VPN连接不上怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.14369999917107634,
+          "scores": [
+            4.64859875592677,
+            3.2392099386764635,
+            1.2804613202350912
+          ]
+        },
+        {
+          "id": "case-02",
+          "query": "VPN身份验证失败要检查什么？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.12229999992996454,
+          "scores": [
+            12.668991154004134,
+            4.732795306316759,
+            1.087693575111171
+          ]
+        },
+        {
+          "id": "case-03",
+          "query": "VPN账号是否可能被锁定？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.0932000002649147,
+          "scores": [
+            12.03616216195281,
+            4.804157640007253,
+            1.7845889677846132
+          ]
+        },
+        {
+          "id": "case-04",
+          "query": "VPN服务器地址应该如何检查？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11629999971773941,
+          "scores": [
+            12.162947139900076,
+            4.506161140320525,
+            1.5569093387351232
+          ]
+        },
+        {
+          "id": "case-05",
+          "query": "多人同时无法连接VPN找谁？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11699999959091656,
+          "scores": [
+            8.033136497434661,
+            7.295835182000049,
+            2.308011295836277
+          ]
+        },
+        {
+          "id": "case-06",
+          "query": "VPN工单需要填写哪些信息？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 2,
+          "elapsed_ms": 0.10060000022349413,
+          "scores": [
+            2.8720248621082636,
+            2.537098304705969,
+            1.6238070278467267
+          ]
+        },
+        {
+          "id": "case-07",
+          "query": "VPN工单可以附上密码吗？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.09940000018104911,
+          "scores": [
+            5.292140458403346,
+            4.876698136348283,
+            1.1237529292751272
+          ]
+        },
+        {
+          "id": "case-08",
+          "query": "VPN连接失败，普通网页也打不开怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11930000073334668,
+          "scores": [
+            16.64731222207592,
+            4.229934490038822,
+            3.5610604381372886
+          ]
+        },
+        {
+          "id": "case-09",
+          "query": "打印机离线怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.09020000106829684,
+          "scores": [
+            10.796430465094558,
+            5.060324193184802,
+            0.45327201449272314
+          ]
+        },
+        {
+          "id": "case-10",
+          "query": "打印队列一直等待怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.10470000052009709,
+          "scores": [
+            13.624767721620726,
+            3.6221046017569853,
+            1.0437982528874001
+          ]
+        },
+        {
+          "id": "case-11",
+          "query": "打印机缺纸或卡纸应检查什么？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11150000136694871,
+          "scores": [
+            14.633725027671062,
+            6.470061134766733,
+            1.603294729861297
+          ]
+        },
+        {
+          "id": "case-12",
+          "query": "文件发送到错误的打印机怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11250000170548446,
+          "scores": [
+            19.58308648307161,
+            8.463203352368769,
+            2.8595081807715115
+          ]
+        },
+        {
+          "id": "case-13",
+          "query": "如何判断打印故障是否只影响一个文件？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.13969999963592272,
+          "scores": [
+            19.72997632638876,
+            5.494865004465994,
+            3.2710570900932803
+          ]
+        },
+        {
+          "id": "case-14",
+          "query": "所有同事都无法打印怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.11059999997087289,
+          "scores": [
+            8.505982983256219,
+            4.06362179321656,
+            3.324295594537256
+          ]
+        },
+        {
+          "id": "case-15",
+          "query": "打印机工单需要什么信息？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.10110000039276201,
+          "scores": [
+            9.312514039425656,
+            5.685857213643033,
+            1.4297773772461233
+          ]
+        },
+        {
+          "id": "case-16",
+          "query": "打印故障是否应该尝试测试页？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.10799999836308416,
+          "scores": [
+            12.543589133995365,
+            6.515777172382697,
+            4.092104443062445
+          ]
+        },
+        {
+          "id": "case-17",
+          "query": "How do I troubleshoot a VPN connection failure?",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 0.05109999983687885,
+          "scores": [
+            1.310388449549228,
+            1.1073209274598457
+          ]
+        },
+        {
+          "id": "case-18",
+          "query": "What information belongs in a printer support ticket?",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [],
+          "rank": null,
+          "elapsed_ms": 0.019099999917671084,
+          "scores": []
+        },
+        {
+          "id": "case-19",
+          "query": "公司员工如何申请年假？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.09730000056151766,
+          "scores": [
+            4.498433177673542,
+            3.223988344448516,
+            1.2110323178367683
+          ]
+        },
+        {
+          "id": "case-20",
+          "query": "公司邮箱无法接收邮件怎么办？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.10000000111176632,
+          "scores": [
+            4.2839610906026095,
+            4.151309863518185,
+            1.0747462622148187
+          ]
+        },
+        {
+          "id": "case-21",
+          "query": "VPN服务器具体IP地址是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.0850000014906982,
+          "scores": [
+            11.563092619261278,
+            3.9905430017127315,
+            1.337494416787949
+          ]
+        },
+        {
+          "id": "case-22",
+          "query": "打印机管理员密码是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.09999999929277692,
+          "scores": [
+            7.777983594105341,
+            7.201130663442823,
+            5.060324193184802
+          ]
+        },
+        {
+          "id": "case-23",
+          "query": "VPN怎么安装？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.046499999371008016,
+          "scores": [
+            1.310388449549228,
+            1.1073209274598457
+          ]
+        },
+        {
+          "id": "case-24",
+          "query": "公司打印机采购预算是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 0.09959999988495838,
+          "scores": [
+            9.957061225741079,
+            5.060324193184802,
+            4.710084192970104
+          ]
+        }
+      ]
+    },
+    "hybrid": {
+      "top_k": 3,
+      "positive_count": 18,
+      "source_hit_at_k": 1.0,
+      "source_top1": 1.0,
+      "source_mrr": 1.0,
+      "mean_ms": 620.3025583333025,
+      "cases": [
+        {
+          "id": "case-01",
+          "query": "VPN连接不上怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 549.3196000006719,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-02",
+          "query": "VPN身份验证失败要检查什么？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 601.4221999994334,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-03",
+          "query": "VPN账号是否可能被锁定？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 597.4401999992551,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-04",
+          "query": "VPN服务器地址应该如何检查？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 573.2268000010663,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-05",
+          "query": "多人同时无法连接VPN找谁？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 614.9588999996922,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-06",
+          "query": "VPN工单需要填写哪些信息？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 667.5684999991063,
+          "scores": [
+            0.03252247488101534,
+            0.032018442622950824,
+            0.03200204813108039
+          ]
+        },
+        {
+          "id": "case-07",
+          "query": "VPN工单可以附上密码吗？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 685.802899999544,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-08",
+          "query": "VPN连接失败，普通网页也打不开怎么办？",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 839.839899999788,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-09",
+          "query": "打印机离线怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 605.9271000012814,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-10",
+          "query": "打印队列一直等待怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 601.9047999998293,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-11",
+          "query": "打印机缺纸或卡纸应检查什么？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 666.9869999986986,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-12",
+          "query": "文件发送到错误的打印机怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 631.6158999998152,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-13",
+          "query": "如何判断打印故障是否只影响一个文件？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 680.3326000008383,
+          "scores": [
+            0.03252247488101534,
+            0.032266458495966696,
+            0.031754032258064516
+          ]
+        },
+        {
+          "id": "case-14",
+          "query": "所有同事都无法打印怎么办？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 589.5221999999194,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-15",
+          "query": "打印机工单需要什么信息？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 602.7321000001393,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-16",
+          "query": "打印故障是否应该尝试测试页？",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 625.3231999999116,
+          "scores": [
+            0.03252247488101534,
+            0.032266458495966696,
+            0.031754032258064516
+          ]
+        },
+        {
+          "id": "case-17",
+          "query": "How do I troubleshoot a VPN connection failure?",
+          "expected_source": "vpn_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 668.5113999992609,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.015873015873015872
+          ]
+        },
+        {
+          "id": "case-18",
+          "query": "What information belongs in a printer support ticket?",
+          "expected_source": "printer_guide_zh.txt",
+          "answerable": true,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": 1,
+          "elapsed_ms": 646.6500000005908,
+          "scores": [
+            0.01639344262295082,
+            0.016129032258064516,
+            0.015873015873015872
+          ]
+        },
+        {
+          "id": "case-19",
+          "query": "公司员工如何申请年假？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 611.9910000015807,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.031746031746031744
+          ]
+        },
+        {
+          "id": "case-20",
+          "query": "公司邮箱无法接收邮件怎么办？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 589.6281000004819,
+          "scores": [
+            0.03252247488101534,
+            0.032266458495966696,
+            0.031754032258064516
+          ]
+        },
+        {
+          "id": "case-21",
+          "query": "VPN服务器具体IP地址是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 578.1692000000476,
+          "scores": [
+            0.03278688524590164,
+            0.03225806451612903,
+            0.03149801587301587
+          ]
+        },
+        {
+          "id": "case-22",
+          "query": "打印机管理员密码是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 565.4231999997137,
+          "scores": [
+            0.03252247488101534,
+            0.032266458495966696,
+            0.031754032258064516
+          ]
+        },
+        {
+          "id": "case-23",
+          "query": "VPN怎么安装？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "vpn_guide_zh.txt",
+            "vpn_guide_zh.txt",
+            "printer_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 518.0939999991097,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.015873015873015872
+          ]
+        },
+        {
+          "id": "case-24",
+          "query": "公司打印机采购预算是多少？",
+          "expected_source": null,
+          "answerable": false,
+          "sources": [
+            "printer_guide_zh.txt",
+            "printer_guide_zh.txt",
+            "vpn_guide_zh.txt"
+          ],
+          "rank": null,
+          "elapsed_ms": 574.8705999994854,
+          "scores": [
+            0.03252247488101534,
+            0.03252247488101534,
+            0.031746031746031744
+          ]
+        }
+      ]
+    }
+  },
+  "agent_model": "qwen3:8b",
+  "agent": {
+    "total": 24,
+    "passed": 23,
+    "p95_ms": 5946.464700000433,
+    "cases": [
+      {
+        "id": "case-01",
+        "query": "VPN连接不上怎么办？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "如果 VPN 连接不上，首先检查电脑是否能正常访问互联网，确认账号和密码正确，退出并重新打开 VPN 客户端，确保服务器地址正确。如果多人无法连接，联系 IT 支持确认服务是否正常。若仍无法解决，提交工单并提供错误提示、发生时间、操作系统和客户端版本。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 533.3314999988943,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 556.3172000001941,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 4850.148000001354,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 5946.464700000433
+      },
+      {
+        "id": "case-02",
+        "query": "VPN身份验证失败要检查什么？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "检查 VPN 账号和密码是否正确，确认账号没有被锁定或停用；检查密码是否过期，以及多因素验证是否完成；检查服务器地址是否与公司提供的地址一致；如果多人无法连接，联系 IT 支持确认服务是否正常。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 582.8194999994594,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 328.7818000007974,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 3565.746799999033,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 4479.552500000864
+      },
+      {
+        "id": "case-03",
+        "query": "VPN账号是否可能被锁定？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "是的，VPN账号可能被锁定。请检查账号是否被锁定或停用。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 599.0899999997055,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 379.72520000039367,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1285.1507000013953,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2266.202200000407
+      },
+      {
+        "id": "case-04",
+        "query": "VPN服务器地址应该如何检查？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "检查 VPN 客户端中的服务器地址是否与公司提供的地址一致。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 570.4476999999315,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 315.89619999977003,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1299.8762000006536,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2188.3214000008593
+      },
+      {
+        "id": "case-05",
+        "query": "多人同时无法连接VPN找谁？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "多人同时无法连接VPN时，应联系IT支持人员确认VPN服务是否正常。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 603.6798000004637,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 324.6256000002177,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1958.2331999990856,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2888.891099999455
+      },
+      {
+        "id": "case-06",
+        "query": "VPN工单需要填写哪些信息？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "提交工单时需要提供错误提示、发生时间、操作系统和 VPN 客户端版本。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 607.894300001135,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 371.61290000040026,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1532.10240000044,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2513.759499999651
+      },
+      {
+        "id": "case-07",
+        "query": "VPN工单可以附上密码吗？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "不可以，在工单中不要提供账号密码或验证码。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 653.9087000001018,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 330.6339000009757,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1201.0196999999607,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2187.922900000558
+      },
+      {
+        "id": "case-08",
+        "query": "VPN连接失败，普通网页也打不开怎么办？",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "首先检查电脑是否能正常访问互联网，若普通网页也无法打开，处理本地网络问题。若网络正常，尝试重新连接 VPN 并确认账号密码正确。若仍无法解决，联系 IT 支持团队提交工单。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 691.8062999993708,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 317.6255000016681,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 2443.964199999755,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3455.915200000163
+      },
+      {
+        "id": "case-09",
+        "query": "打印机离线怎么办？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt"
+        ],
+        "answer": "检查打印机是否开机，确认网络连接正常，取消卡住的任务，尝试打印测试页。如果问题依旧，联系 IT 支持团队。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 557.3360999987926,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 354.3817999998282,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 3141.8532999996387,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 4055.825499999628
+      },
+      {
+        "id": "case-10",
+        "query": "打印队列一直等待怎么办？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt"
+        ],
+        "answer": "检查打印机是否开机，确认电脑选择了正确的打印机，取消卡住的任务，检查网络连接。如果问题仍未解决，请提交工单。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 600.2630000002682,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 336.9892000009713,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 3134.5593000005465,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 4074.228299999959
+      },
+      {
+        "id": "case-11",
+        "query": "打印机缺纸或卡纸应检查什么？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt"
+        ],
+        "answer": "检查打印机是否已经开机，屏幕上是否显示缺纸、缺墨或卡纸。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 658.622999999352,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 328.195300000516,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1381.270299998505,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2370.5028999993374
+      },
+      {
+        "id": "case-12",
+        "query": "文件发送到错误的打印机怎么办？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt",
+          "printer_guide_zh.txt"
+        ],
+        "answer": "确认电脑选择的是需要使用的打印机，避免将文件发送到其他设备。如果问题仍未解决，提交工单并提供打印机名称、设备位置、错误提示和发生时间。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 653.489800000898,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 318.4481999996933,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 2213.2744999998977,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3187.74459999986
+      },
+      {
+        "id": "case-13",
+        "query": "如何判断打印故障是否只影响一个文件？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": false,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 702.0089999987249,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 348.4688999997161,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 337.23509999981616,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 696.8664999985776,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 157.85180000057153,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 288.8843000000634,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 696.4011999989452,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 152.93910000036703,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.0040000013541430235,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3386.343600001055
+      },
+      {
+        "id": "case-14",
+        "query": "所有同事都无法打印怎么办？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt"
+        ],
+        "answer": "如果所有同事都无法打印，首先检查打印机是否开机、网络连接是否正常，并确认打印任务未卡住。如果问题仍然存在，联系 IT 支持人员检查设备。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 594.5577999991656,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 272.09810000022117,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1746.1326999982703,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2615.1953999997204
+      },
+      {
+        "id": "case-15",
+        "query": "打印机工单需要什么信息？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt"
+        ],
+        "answer": "打印机工单需要提供打印机名称、设备位置、错误提示和发生时间。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 612.087800000154,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 336.2113999992289,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1339.660300000105,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2290.04630000054
+      },
+      {
+        "id": "case-16",
+        "query": "打印故障是否应该尝试测试页？",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt"
+        ],
+        "answer": "是的，根据指南，尝试打印测试页可以帮助判断问题是否只发生在某个文件中。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 653.7216999986413,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 358.5537999988446,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1394.6309999992081,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2409.3776999998227
+      },
+      {
+        "id": "case-17",
+        "query": "How do I troubleshoot a VPN connection failure?",
+        "expected_source": "vpn_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt",
+          "vpn_guide_zh.txt"
+        ],
+        "answer": "请按照以下步骤排查 VPN 连接故障：1. 检查电脑是否能够正常访问互联网。2. 检查 VPN 账号和密码是否正确。3. 完全退出 VPN 客户端，然后重新打开并尝试连接。4. 确认 VPN 客户端中的服务器地址与公司提供的地址一致。5. 如果提示身份验证失败，检查密码是否过期，以及多因素验证是否完成。6. 如果多名同事同时无法连接，联系 IT 支持人员确认 VPN 服务是否正常。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 677.9640000004292,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 328.0466999985947,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 5610.944300000483,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 6619.118900000103
+      },
+      {
+        "id": "case-18",
+        "query": "What information belongs in a printer support ticket?",
+        "expected_source": "printer_guide_zh.txt",
+        "answerable": true,
+        "answered": true,
+        "sources": [
+          "printer_guide_zh.txt"
+        ],
+        "answer": "打印机支持工单中应提供打印机名称、设备位置、错误提示和发生时间。",
+        "passed": true,
+        "retry_count": 0,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 671.4281999993545,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 345.65999999904307,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "generate",
+            "elapsed_ms": 1402.904500000659,
+            "retry_count": 0,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2422.4447999986296
+      },
+      {
+        "id": "case-19",
+        "query": "公司员工如何申请年假？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 614.8384999996779,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 363.2273000002897,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 270.06059999985155,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 625.5710999994335,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 162.38369999882707,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 259.8502000000735,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 655.1021000013861,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 172.85480000100506,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.004300000000512227,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3130.61209999978
+      },
+      {
+        "id": "case-20",
+        "query": "公司邮箱无法接收邮件怎么办？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 661.0049000009894,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 343.92379999917466,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 284.141100000852,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 640.6533000008494,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 167.84320000078878,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 246.50759999894944,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 658.7682999997924,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 180.78789999890432,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.0022999993234407157,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3189.877599999818
+      },
+      {
+        "id": "case-21",
+        "query": "VPN服务器具体IP地址是多少？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 618.2908999999199,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 350.09770000033313,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 265.7853000000614,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 625.3378999990673,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 181.3958000002458,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 254.7379000006913,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 638.5434000003443,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 180.72380000012345,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.0024000000848900527,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3120.801400000346
+      },
+      {
+        "id": "case-22",
+        "query": "打印机管理员密码是多少？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 588.503099999798,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 306.43159999999625,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 266.2248999986332,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 598.5414000006131,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 167.46559999955934,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 234.90120000133174,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 600.8460000011837,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 172.12839999956486,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.0018000009731622413,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 2940.800099999251
+      },
+      {
+        "id": "case-23",
+        "query": "VPN怎么安装？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 571.3971000004676,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 298.0050999995001,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 205.96329999898444,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 522.937700001421,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 163.18829999909212,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 3345.7134000000224,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 546.0545999994793,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "vpn_guide_zh.txt",
+              "vpn_guide_zh.txt",
+              "printer_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 154.36460000091756,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.0020000006770715117,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 5813.328100000945
+      },
+      {
+        "id": "case-24",
+        "query": "公司打印机采购预算是多少？",
+        "expected_source": null,
+        "answerable": false,
+        "answered": false,
+        "sources": [],
+        "answer": "已找到相关主题的资料，但现有内容不足以回答这个问题，请补充资料后再试。",
+        "passed": true,
+        "retry_count": 2,
+        "error": null,
+        "trace": [
+          {
+            "node": "retrieve",
+            "elapsed_ms": 655.7692999995197,
+            "retry_count": 0,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 318.7601999998151,
+            "retry_count": 0,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 284.19250000115426,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 645.9963000015705,
+            "retry_count": 1,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 162.0770999998058,
+            "retry_count": 1,
+            "status": "ok"
+          },
+          {
+            "node": "rewrite",
+            "elapsed_ms": 246.34449999939534,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "retrieve",
+            "elapsed_ms": 639.289299999291,
+            "retry_count": 2,
+            "status": "ok",
+            "sources": [
+              "printer_guide_zh.txt",
+              "printer_guide_zh.txt",
+              "vpn_guide_zh.txt"
+            ]
+          },
+          {
+            "node": "grade",
+            "elapsed_ms": 158.66540000024543,
+            "retry_count": 2,
+            "status": "ok"
+          },
+          {
+            "node": "fallback",
+            "elapsed_ms": 0.002599999788799323,
+            "retry_count": 2,
+            "status": "ok"
+          }
+        ],
+        "elapsed_ms": 3116.945300000225
+      }
+    ]
+  }
+}

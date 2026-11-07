@@ -37,6 +37,11 @@ class InMemoryVectorStore:
 
         self._items.extend(items)
 
+    def export_items(self):
+        """Return an isolated snapshot for alternative search indexes."""
+        from copy import deepcopy
+        return deepcopy(self._items)
+
     def count(self) -> int:
         """Return the number of stored embeddings."""
         return len(self._items)

@@ -23,3 +23,11 @@ pypdf>=5.0,<7.0
 sentence-transformers==6.2.0
 transformers==5.22.1
 torch==2.15.0
+# Exact vector search
+faiss-cpu==1.15.1
+
+# Agent orchestration
+langgraph==1.2.20
+
+# Multipart uploads
+python-multipart==0.0.33
