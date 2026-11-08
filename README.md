@@ -1,122 +1,230 @@
-# IT-Service-Desk-Agent
+# IT Service Desk Agent
 
-基于本地 Qwen3 Embedding 的 IT 服务台知识检索与 Agent 学习项目。
+基于 **LangGraph + RAG** 构建的 IT 服务台智能问答系统。
 
-目前提供从本地文档加载、分块、向量生成到检索评估的完整基础流程，并支持将向量索引保存为 JSON 后复用。
+项目面向企业内部 IT 支持场景，结合本地大语言模型、混合检索和 Agent 工作流，实现知识库问答、问题分析与文档管理。
 
-## 已完成功能
+## 核心功能
 
-- 加载 TXT、Markdown 和 PDF 文档。
-- 支持固定长度和边界感知两种分块方式，支持重叠，并保留来源信息和文本位置。
-- 使用 Qwen/Qwen3-Embedding-0.6B 在本地 CPU 上生成向量。
-- 支持文档和查询的向量化，已进行中文及跨语言检索示例验证。
-- 实现内存及 JSON 向量存储、余弦相似度计算、Top-K 检索和最低相关度过滤。
-- 知识库可根据文档内容、模型和分块设置校验缓存；缓存不匹配时重新构建。
-- 提供统一项目配置、知识库构建入口及检索评估脚本。
-- 边界分块检索评估样例当前结果：6/6 符合预期。
+- **智能知识问答**：根据企业内部文档回答 IT 相关问题，并提供引用来源。
+- **混合检索**：结合 FAISS 向量检索和 BM25 关键词检索，通过 RRF 融合结果。
+- **Agent 工作流**：使用 LangGraph 编排检索、相关性判断、查询重写和回答生成。
+- **查询重写**：检索结果不足时自动优化问题，最多重写两次。
+- **文档管理**：支持 PDF、TXT、Markdown 文档上传、解析、分块和索引。
+- **HTTP API**：通过 FastAPI 提供问答、文档上传和健康检查接口。
+- **检索评估**：支持不同检索方案的效果测试与评估报告生成。
 
-## 开发环境
+## 技术栈
 
-- Python 3.13
-- 使用虚拟环境管理依赖。
-- 依赖列表见 requirements.txt。
-- 首次加载模型需要联网下载，模型推理在本地执行。
+| 模块 | 技术 |
+|---|---|
+| 开发语言 | Python |
+| Agent 框架 | LangGraph |
+| 大语言模型 | Ollama（本地部署） |
+| Embedding | Qwen3-Embedding-0.6B |
+| 向量检索 | FAISS |
+| 关键词检索 | BM25 |
+| 检索融合 | RRF |
+| API 服务 | FastAPI |
+| 测试 | Pytest |
 
-## 安装依赖
+## 系统工作流程
 
-在项目根目录、已激活虚拟环境的终端中执行：
+系统主要分为两个阶段：**知识库构建**和**Agent 智能问答**。
 
-    python -m pip install -r requirements.txt
+### 1. 知识库构建
 
-## 运行测试
+```text
+上传文档（PDF / TXT / Markdown）
+              ↓
+       文档解析与清洗
+              ↓
+       文本分块（Chunking）
+              ↓
+      Qwen3 Embedding 向量化
+              ↓
+       构建知识库索引
+         ├── FAISS 向量索引
+         └── BM25 关键词索引
+              ↓
+         知识库就绪
+```
 
-    python -m pytest tests -v
+### 2. Agent 智能问答
 
-## 运行检索
+```text
+用户输入问题
+      ↓
+FastAPI 接收请求
+      ↓
+LangGraph Agent
+      ↓
+混合检索（Hybrid Search）
+  ├── FAISS：语义相似度检索
+  └── BM25：关键词匹配检索
+      ↓
+RRF 融合检索结果
+      ↓
+LLM 判断文档相关性
+      ↓
+  ┌── 是否有相关证据？ ──┐
+  │                     │
+  是                    否
+  │                     │
+  │                查询重写
+  │                     ↓
+  │                重新检索
+  │                     ↓
+  │             最多重写 2 次
+  │                     │
+  │             仍无有效证据
+  │                     ↓
+  │                无法可靠回答
+  │
+  ↓
+本地 LLM 生成回答
+      ↓
+引用来源检查与校验
+      ↓
+返回回答、引用及执行信息
+```
 
-启动交互式检索。首次运行会加载本地嵌入模型，并自动读取可用索引或重新构建索引：
+### 3. 关键机制
 
-    python -m embeddings.demo_pipeline
+| 机制 | 作用 |
+|---|---|
+| Hybrid Search | 结合语义检索与关键词检索，提高召回效果 |
+| RRF Fusion | 融合不同检索器的排序结果 |
+| Relevance Grading | 判断检索文档是否与问题相关 |
+| Query Rewriting | 证据不足时优化查询，最多重写两次 |
+| Answer Generation | 使用本地 LLM 根据检索证据生成回答 |
+| Citation Validation | 检查回答引用，减少无依据的输出 |
+| Fallback | 多次检索失败或模型异常时返回降级结果 |
 
-显式强制重建并保存向量索引：
+系统通过 LangGraph 管理各节点之间的执行顺序和条件分支，实现从检索到回答的自动化流程。
 
-    python -m ingestion.build_index
+**当前版本**已实现本地知识库检索、查询重写、回答生成和引用校验。Web Search 和多轮会话记忆计划在后续版本中加入。
 
-运行检索评估并生成报告：
+## 项目结构
 
-    python -m evaluation.evaluate_retrieval
+```text
+IT-Service-Desk-Agent/
+├── app/             # FastAPI 接口与服务
+├── agents/          # LangGraph Agent 工作流
+├── ingestion/       # 文档加载、分块与索引
+├── embeddings/      # 文本向量化
+├── retrieval/       # 检索与结果融合
+├── vectorstore/     # 向量存储
+├── generation/      # 回答生成与演示入口
+├── llm/             # 大语言模型调用
+├── evaluation/      # 检索与 Agent 评估
+├── data/            # 知识文档与索引
+├── tests/           # 自动化测试
+├── docs/            # 技术文档
+├── project_config.py
+└── requirements.txt
+```
 
-评估用例位于 `evaluation/retrieval_cases.json`，报告按分块模式写入 `evaluation/retrieval_report_<chunk_mode>.json`。
+## 快速开始
 
-## 项目配置
+### 1. 安装依赖
 
-默认配置定义在 `project_config.py`：
+建议使用 Python 3.13 和虚拟环境。
 
-- 文档目录：`data/documents`；默认读取 VPN 和打印机中文指南。
-- 分块模式：`boundary`；也可设为 `fixed`。
-- 分块长度与重叠：300 和 50 个字符。
-- 检索数量与最低分数：Top-3，最低余弦相似度 0.5。
-- 索引文件：`data/indexes/knowledge_base.json`。
+```bash
+python -m pip install -r requirements.txt
+```
 
-可通过创建 `ProjectConfig` 并传入 `build_knowledge_base` 使用自定义配置。
+### 2. 准备本地模型
 
-## 运行示例
+安装并启动 Ollama，确保项目配置的本地大语言模型可用。
 
-文档分块：
+首次使用 Embedding 模型时，需要联网下载模型文件。
 
-    python -m ingestion.demo_chunker
+### 3. 构建知识库
 
-中文及跨语言向量相似度示例：
+将文档放入 `data/documents/`，然后执行：
 
-    python -m embeddings.demo_embedder
+```bash
+python -m ingestion.build_index
+```
 
-文档加载、分块和向量生成：
+### 4. 启动 Agent
 
-    python -m embeddings.demo_pipeline
+```bash
+python -m generation.demo_agent
+```
 
-## 后续计划
+运行混合检索问答：
 
-- 扩充中文知识文档和检索评估用例。
-- 接入基于检索结果的回答生成。
-- 逐步实现 Agent 工具调用与应用接口。
+```bash
+python -m generation.demo_hybrid
+```
 
-## 当前限制
+### 5. 启动 API
 
-- 首次使用嵌入模型时需要联网下载；下载后模型在本地运行。
-- 已实现混合检索、LangGraph 问答、引用校验与 FastAPI；界面暂缓，外部搜索及会话记忆尚未实现。
-## V2.1 混合检索入口
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
 
-安装更新后的 requirements.txt 后运行：
+访问 API 文档：
 
-    python -m generation.demo_hybrid
+http://127.0.0.1:8000/docs
 
-该入口复用原有 JSON 缓存及 Qwen Embedding，启动时用缓存向量构建 FAISS，并建立 BM25。通过 RRF 融合结果，再交给现有回答生成与引用校验。FAISS 当前在内存运行，重启从 JSON 重建，无需重新生成文档向量。
+主要接口：
 
-RRF 分数不能套用原有 0.5 余弦阈值，因此该入口显式使用 min_score=None。相关性不足依赖模型的证据判断与引用校验；尚未接入 LangGraph 查询重写。原 generation.demo_rag 入口保留。
+| 接口 | 功能 |
+|---|---|
+| `GET /health` | 服务健康检查 |
+| `POST /chat` | 智能问答 |
+| `POST /documents` | 上传知识文档 |
 
-## V2.1 Agent 工作流
+## 测试与评估
 
-    python -m generation.demo_agent
+运行自动化测试：
 
-agents/state.py、graph.py、routing.py 和 nodes 模块使用 LangGraph 编排检索、相关性判断、重写与生成。llm/client.py 沿用本地 Ollama。最多两次重写（三次检索），证据不足或模型错误时回退；生成使用原问题和已判断的证据，并保留引用检查。显示节点路径和重写次数，返回状态包含耗时及来源。引用纠正与查询重写独立计数。
+```bash
+python -m pytest tests -v
+```
 
-判断依赖模型；已接入下述 HTTP API，UI 与外部搜索尚未实现。
+运行检索评估：
 
-## V2.1 HTTP API
+```bash
+python -m evaluation.benchmark
+```
 
-    python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+运行 Agent 评估：
 
-打开 http://127.0.0.1:8000/docs 进行交互测试。
+```bash
+python -m evaluation.benchmark --agent
+```
 
-- GET /health：进程存活检查；knowledge_ready 表示知识库是否已初始化，不代表 Ollama 健康状态。
-- POST /chat：JSON 请求 {"question":"VPN连接失败"}，返回 answer、answered、citations、retry_count、trace。
-- POST /documents：multipart 表单字段 file，支持 PDF/TXT/MD，单文件最多 5 MiB；文本使用 UTF-8。成功返回 201 及 document_id、filename、chunk_count。上传后立即纳入问答，重启后从 data/uploads 恢复。
+## 开发进度
 
-首次问答或有效上传会加载模型。模型不可用返回 503；非法文档返回 400，超限 413，问题校验失败 422。上传使用独立目录，不覆盖同名原文件；失败不切换知识库。当前仅支持本机单进程运行，问答和入库串行处理，请勿使用多个 workers。无登录鉴权，不适合直接开放公网。原命令行入口只读取原始知识库，API 上传资料由 API 服务管理。
+**已实现**
 
-## 核心评估（界面暂缓）
+- 文档解析、分块与向量化
+- FAISS + BM25 混合检索
+- LangGraph Agent 工作流
+- 查询重写与重试控制
+- 本地 LLM 回答生成与引用校验
+- FastAPI 问答与文档上传
+- 自动化测试与检索评估
 
-    python -m evaluation.benchmark
-    python -m evaluation.benchmark --agent
+**后续计划**
 
-第一条对比三种检索方式；第二条同时运行 24 题本地 Agent 评估。报告默认写入 evaluation/reports 的新文件，不覆盖历史结果。详见 docs/architecture.md 和 docs/api.md。小语料来源命中率不是回答事实准确率。
+- Web Search 外部搜索
+- 多轮对话与会话记忆
+- 可视化交互界面
+- 进一步完善部署、安全性和评估体系
+
+目前项目主要面向本地开发与演示，尚未实现用户鉴权，不建议直接部署到公网。
+
+## 参考项目
+
+本项目在学习和实践过程中参考了：
+
+- [Enterprise Agentic RAG Platform](https://github.com/ara-5/Enterprise-Agentic-RAG-Platform)
+- [LangGraph](https://github.com/langchain-ai/langgraph)
+
+项目基于实际开发需求独立组织模块，并逐步完善企业 IT 服务台的 Agentic RAG 工作流程。
