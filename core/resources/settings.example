@@ -1,0 +1,31 @@
+# Copy to .env; environment variables override this file.
+AGENT_MODEL_NAME=Qwen/Qwen3-Embedding-0.6B
+AGENT_LLM_MODEL=qwen3:8b
+# Optional role overrides; blank means use AGENT_LLM_MODEL.
+AGENT_LLM_GRADE_MODEL=
+AGENT_LLM_REWRITE_MODEL=
+AGENT_LLM_TIMEOUT=180
+# Cooperative tool deadline; local computation cannot be forcibly interrupted.
+AGENT_TOOL_TIMEOUT=180
+AGENT_TOP_K=3
+AGENT_CANDIDATE_K=20
+AGENT_RANK_CONSTANT=60
+AGENT_MAX_CONTEXT_CHARS=2000
+AGENT_CHUNK_MODE=boundary
+AGENT_CHUNK_SIZE=300
+AGENT_OVERLAP=50
+AGENT_DOCUMENTS_DIR=data/documents
+AGENT_INDEX_PATH=data/indexes/knowledge_base.json
+AGENT_FILE_NAMES='["vpn_guide_zh.txt", "printer_guide_zh.txt"]'
+# Legacy cosine retrieval only; never applied to RRF scores.
+AGENT_MIN_SCORE=0.5
+
+# Optional: requires locally cached or local-directory Cross-Encoder weights.
+AGENT_RERANKER_ENABLED=false
+AGENT_RERANKER_MODEL=BAAI/bge-reranker-base
+AGENT_RERANKER_BATCH_SIZE=8
+
+# Opt-in Brave Search; keep real credentials out of version control.
+AGENT_WEB_SEARCH_ENABLED=false
+AGENT_WEB_SEARCH_API_KEY=
+AGENT_WEB_SEARCH_TIMEOUT=15

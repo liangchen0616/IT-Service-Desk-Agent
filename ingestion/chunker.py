@@ -34,6 +34,23 @@ class DocumentChunker:
         self.overlap = overlap
 
     def chunk_document(self, document: Document) -> list[Chunk]:
+        """Keep PDF chunks within one page and preserve document offsets."""
+        if document.page_spans is None:
+            return self._chunk_text(document)
+        chunks = []
+        for page, (start, end) in enumerate(document.page_spans, start=1):
+            text = document.content[start:end]
+            if not text.strip():
+                continue
+            page_document = Document(text, {**document.metadata, "page": page})
+            for chunk in self._chunk_text(page_document):
+                chunk.start_index += start
+                chunk.end_index += start
+                chunk.chunk_index = len(chunks)
+                chunks.append(chunk)
+        return chunks
+
+    def _chunk_text(self, document: Document) -> list[Chunk]:
         """Split a document into overlapping character chunks."""
         chunks = []
         start = 0

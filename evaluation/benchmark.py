@@ -8,9 +8,11 @@ from math import ceil
 from pathlib import Path
 from time import perf_counter
 from agents.graph import AgentGraph
-from generation.local_llm import OllamaChat
+from llm.factory import ModelFactory
+from retrieval.reranker import CrossEncoderReranker, RerankingRetriever
+from core.logging import configure_logging
 from ingestion.knowledge_base import build_knowledge_base, compute_signature
-from project_config import ProjectConfig
+from core.config import PROJECT_ROOT, load_config
 from retrieval.factory import build_hybrid_retriever
 from retrieval.sparse import BM25Retriever
 from retrieval.retriever import KnowledgeRetriever
@@ -18,14 +20,18 @@ from vectorstore.faiss_store import FaissVectorStore
 
 
 def load_dataset(path):
-    cases = json.loads(Path(path).read_text(encoding="utf-8"))
+    return parse_dataset(Path(path).read_bytes())
+
+
+def parse_dataset(raw):
+    cases = json.loads(raw)
     if not isinstance(cases, list) or not cases: raise ValueError("Dataset must be nonempty")
     seen = set()
     for case in cases:
         if not isinstance(case, dict): raise ValueError("Invalid case")
         if not isinstance(case.get("id"), str) or not case["id"] or case["id"] in seen: raise ValueError("Case IDs must be unique")
         seen.add(case["id"])
-        if not isinstance(case.get("query"), str) or not case["query"].strip(): raise ValueError("Invalid query")
+        if not isinstance(case.get("query"), str) or not case["query"].strip() or len(case["query"]) > 1000: raise ValueError("Invalid query")
         if type(case.get("answerable")) is not bool: raise ValueError("Missing answerability")
         source = case.get("expected_source")
         if case["answerable"] and (not isinstance(source, str) or not source.strip()): raise ValueError("Missing source")
@@ -44,7 +50,9 @@ def evaluate_retrieval(cases, retrievers, top_k=3):
             rank = next((i for i, s in enumerate(sources, 1) if s == case["expected_source"]), None) if case["answerable"] else None
             records.append({**case, "sources": sources, "rank": rank,
                 "elapsed_ms": (perf_counter()-start)*1000,
-                "scores": [h.score for h in hits]})
+                "scores": [h.score for h in hits],
+                "score_types": [getattr(h, "score_type", None) for h in hits],
+                "pages": [h.chunk.metadata.get("page") for h in hits]})
         positive = [v for v in records if v["answerable"]]
         reports[name] = {"top_k": top_k, "positive_count": len(positive),
             "source_hit_at_k": sum(v["rank"] is not None for v in positive)/len(positive) if positive else None,
@@ -66,6 +74,7 @@ def evaluate_agent(cases, agent, progress=None):
         else: passed = passed and not sources
         record = {**case, "answered": result.answered, "sources": sources,
             "answer": result.answer, "passed": bool(passed), "retry_count": state["retry_count"],
+            "citations": [{"source": c.source, "page": getattr(c, "page", None), "quote": getattr(c, "quote", None)} for c in result.citations],
             "error": state.get("error"), "trace": state["trace"], "elapsed_ms": (perf_counter()-start)*1000}
         records.append(record)
         if progress: progress(record)
@@ -74,35 +83,82 @@ def evaluate_agent(cases, agent, progress=None):
         "p95_ms": latencies[ceil(.95*len(latencies))-1], "cases": records}
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--agent", action="store_true", help="Also call the local model for all cases")
-    parser.add_argument("--output", type=Path)
-    args = parser.parse_args()
-    dataset = Path(__file__).with_name("dataset.json")
-    cases = load_dataset(dataset)
-    config = ProjectConfig()
-    kb = build_knowledge_base(config, use_cache=True)
+def run_benchmark(cases, config, *, include_agent=False, embedder=None,
+                  model_factory=None, reranker=None, progress=None):
+    """Evaluate only the explicitly configured corpus, not API upload folders."""
+    missing = {c["expected_source"] for c in cases if c["answerable"]} - set(config.file_names)
+    if missing:
+        raise ValueError("Dataset sources absent from configured corpus: " + ", ".join(sorted(missing)))
+    signature = compute_signature(config)
+    kb = build_knowledge_base(config, embedder, use_cache=True)
     items = kb.retriever.store.export_items()
-    store = FaissVectorStore(); store.add(items)
-    hybrid = build_hybrid_retriever(kb)
-    report = {"created_at": datetime.now(timezone.utc).isoformat(), "python": platform.python_version(),
-        "config": config.to_report(), "corpus_signature": compute_signature(config),
-        "dataset_sha256": hashlib.sha256(dataset.read_bytes()).hexdigest(),
-        "notes": "Source-level metrics on 2 documents; not chunk recall or factual-answer quality. Negative retrieval candidates are not hallucinations. Unthresholded top-k comparison. Timings include query embedding but exclude startup.",
-        "retrieval": evaluate_retrieval(cases, {"faiss": KnowledgeRetriever(kb.retriever.embedder, store),
-            "bm25": BM25Retriever([i.chunk for i in items]), "hybrid": hybrid})}
-    if args.agent:
-        report["agent_model"] = "qwen3:8b"
-        report["agent"] = evaluate_agent(cases, AgentGraph(hybrid, OllamaChat()),
-            lambda record: print(record["id"], record["passed"], flush=True))
-    output = args.output or Path(__file__).parent / "reports" / (datetime.now().strftime("benchmark-%Y%m%d-%H%M%S-%f")+'.json')
+    store = FaissVectorStore()
+    store.add(items)
+    hybrid = build_hybrid_retriever(kb, candidate_k=config.candidate_k,
+                                    rank_constant=config.rank_constant)
+    retrievers = {"faiss": KnowledgeRetriever(kb.retriever.embedder, store),
+                  "bm25": BM25Retriever([i.chunk for i in items]), "hybrid": hybrid}
+    agent_retriever = hybrid
+    if config.reranker_enabled:
+        ranker = reranker if reranker is not None else CrossEncoderReranker(
+            config.reranker_model, config.reranker_batch_size)
+        agent_retriever = RerankingRetriever(hybrid, ranker, config.candidate_k)
+        retrievers["hybrid_reranked"] = agent_retriever
+    retrieval = evaluate_retrieval(cases, retrievers, top_k=config.top_k)
+    if config.reranker_enabled:
+        records = retrieval["hybrid_reranked"]["cases"]
+        for record in records:
+            kinds = set(record["score_types"])
+            record["rerank_status"] = ("empty" if not kinds else
+                "applied" if kinds == {"cross_encoder"} else "fallback")
+        retrieval["hybrid_reranked"]["rerank_counts"] = {
+            status: sum(r["rerank_status"] == status for r in records)
+            for status in ("applied", "fallback", "empty")}
+    report = {"created_at": datetime.now(timezone.utc).isoformat(),
+        "python": platform.python_version(), "config": config.to_report(),
+        "corpus_signature": signature, "document_count": kb.document_count,
+        "chunk_count": kb.chunk_count,
+        "notes": "Source-level metrics, not chunk recall or factual-answer quality. Negative retrieval candidates are not hallucinations. Unthresholded top-k comparison. Timings exclude index startup but include query embedding and lazy reranker loading on first use. Corpus is configured files only, excluding API uploads.",
+        "retrieval": retrieval}
+    if include_agent:
+        factory = model_factory if model_factory is not None else ModelFactory(config)
+        agent = AgentGraph(agent_retriever, factory.get_model("generate"), config,
+                           grade_model=factory.get_model("grade"),
+                           rewrite_model=factory.get_model("rewrite"))
+        report["agent_model"] = config.llm_model
+        report["agent"] = evaluate_agent(cases, agent, progress)
+    if compute_signature(config) != signature:
+        raise ValueError("Corpus changed during evaluation; report was not saved")
+    return report
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Evaluate the configured local knowledge base")
+    parser.add_argument("--agent", action="store_true", help="Also call configured local models")
+    parser.add_argument("--dataset", type=Path, default=Path(__file__).with_name("dataset.json"))
+    parser.add_argument("--env-file", type=Path, help="Optional configuration file; environment still takes precedence")
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args(argv)
+    output = args.output or PROJECT_ROOT / "data" / "reports" / (datetime.now().strftime("benchmark-%Y%m%d-%H%M%S-%f")+'.json')
+    if output.exists():
+        parser.error("Output already exists; choose a new report path")
+    configure_logging()
+    raw = args.dataset.read_bytes()
+    cases = parse_dataset(raw)
+    config = load_config(args.env_file)
+    report = run_benchmark(cases, config, include_agent=args.agent,
+        progress=lambda record: print(record["id"], record["passed"], flush=True))
+    report["dataset_sha256"] = hashlib.sha256(raw).hexdigest()
+    report["dataset_path"] = str(args.dataset.resolve())
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open('x', encoding='utf-8') as handle: json.dump(report, handle, ensure_ascii=False, indent=2)
+    with output.open('x', encoding='utf-8') as handle:
+        json.dump(report, handle, ensure_ascii=False, indent=2)
     print(output)
     for name, result in report["retrieval"].items():
-        print(name, 'top1=', result['source_top1'], 'hit@3=', result['source_hit_at_k'])
+        print(name, 'top1=', result['source_top1'], f"hit@{result['top_k']}=", result['source_hit_at_k'])
+        if "rerank_counts" in result: print('Reranking:', result['rerank_counts'])
     if args.agent: print('Agent:', report['agent']['passed'], '/', report['agent']['total'])
+    return 0
 
 
 if __name__ == "__main__": main()

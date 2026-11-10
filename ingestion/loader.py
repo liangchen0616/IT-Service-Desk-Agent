@@ -10,6 +10,8 @@ class Document:
 
     content: str
     metadata: dict
+    # Offsets in content, including empty pages; physical PDF order starts at 1.
+    page_spans: list[tuple[int, int]] | None = None
 
 
 class DocumentLoader:
@@ -80,6 +82,11 @@ class DocumentLoader:
             page_texts.append(text)
 
         content = "\n\n".join(page_texts)
+        page_spans = []
+        offset = 0
+        for text in page_texts:
+            page_spans.append((offset, offset + len(text)))
+            offset += len(text) + 2
 
         metadata = {
             "source": path.name,
@@ -90,6 +97,7 @@ class DocumentLoader:
         return Document(
             content=content,
             metadata=metadata,
+            page_spans=page_spans,
         )
 
 

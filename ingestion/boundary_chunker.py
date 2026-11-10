@@ -7,7 +7,7 @@ from ingestion.loader import Document
 class BoundaryChunker(DocumentChunker):
     """Prefer punctuation and line boundaries within the size limit."""
 
-    def chunk_document(self, document: Document) -> list[Chunk]:
+    def _chunk_text(self, document: Document) -> list[Chunk]:
         text = document.content
         if not text.strip():
             return []

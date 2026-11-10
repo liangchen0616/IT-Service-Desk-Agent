@@ -10,8 +10,8 @@ class EvidenceSnapshot:
         return self.documents[:top_k]
 
 
-def make_node(model):
+def make_node(model, top_k=3, max_context_chars=2000):
     def generate(state):
-        assistant = RagAssistant(EvidenceSnapshot(state["documents"]), model, min_score=None)
+        assistant = RagAssistant(EvidenceSnapshot(state["documents"]), model, min_score=None, top_k=top_k, max_context_chars=max_context_chars)
         return {"result": assistant.answer(state["question"])}
     return generate

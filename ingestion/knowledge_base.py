@@ -13,7 +13,7 @@ from vectorstore.json_store import IndexMismatchError, JsonVectorStore
 
 
 # Increase this when changing document extraction or embedding behavior.
-PIPELINE_VERSION = 1
+PIPELINE_VERSION = 2
 
 
 @dataclass

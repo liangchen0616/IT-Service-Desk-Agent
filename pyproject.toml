@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "it-service-desk-agent"
+version = "0.2.1"
+description = "Local knowledge agent with hybrid retrieval and LangGraph"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dynamic = ["dependencies"]
+
+[project.scripts]
+it-agent-query = "scripts.demo_query:main"
+it-agent-ingest = "scripts.ingest:main"
+it-agent-documents = "scripts.documents:main"
+it-agent-serve = "scripts.serve:main"
+it-agent-init = "scripts.initialize:main"
+
+[tool.setuptools]
+py-modules = ["project_config"]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app", "app.*", "agents", "agents.*", "core", "core.*", "embeddings", "generation", "ingestion", "llm", "llm.*", "retrieval", "vectorstore", "scripts", "evaluation", "tools", "tools.*", "memory", "memory.*"]
+exclude = ["tests*", "data*", "docs*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+core = ["resources/*.txt", "resources/*.example"]
+evaluation = ["dataset.json", "retrieval_cases.json"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

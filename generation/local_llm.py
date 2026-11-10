@@ -5,8 +5,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 
-class LocalModelError(RuntimeError):
-    """The local model service failed or returned an unusable response."""
+from core.exceptions import LocalModelError
 
 
 class _NoRedirect(HTTPRedirectHandler):

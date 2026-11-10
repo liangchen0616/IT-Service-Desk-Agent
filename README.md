@@ -1,122 +1,93 @@
-# IT-Service-Desk-Agent
+# IT Service Desk Agent
 
-基于本地 Qwen3 Embedding 的 IT 服务台知识检索与 Agent 学习项目。
+基于 **LangGraph + RAG** 的本地 IT 服务台问答项目。使用企业文档回答问题，提供来源引用，并支持文档管理、可选公开搜索和多轮对话。
 
-目前提供从本地文档加载、分块、向量生成到检索评估的完整基础流程，并支持将向量索引保存为 JSON 后复用。
+技术栈：Python 3.13、FastAPI、LangGraph、Ollama、Qwen3 Embedding、FAISS、BM25。
 
-## 已完成功能
+## 已实现
 
-- 加载 TXT、Markdown 和 PDF 文档。
-- 支持固定长度和边界感知两种分块方式，支持重叠，并保留来源信息和文本位置。
-- 使用 Qwen/Qwen3-Embedding-0.6B 在本地 CPU 上生成向量。
-- 支持文档和查询的向量化，已进行中文及跨语言检索示例验证。
-- 实现内存及 JSON 向量存储、余弦相似度计算、Top-K 检索和最低相关度过滤。
-- 知识库可根据文档内容、模型和分块设置校验缓存；缓存不匹配时重新构建。
-- 提供统一项目配置、知识库构建入口及检索评估脚本。
-- 边界分块检索评估样例当前结果：6/6 符合预期。
+- **知识库入库**：PDF / TXT / Markdown 解析、分块、向量化和 JSON 缓存；PDF 支持页码引用。
+- **混合检索**：FAISS + BM25 + RRF，可选 Cross-Encoder 重排序。
+- **Agent 问答**：检索、证据判断、最多两次问题重写、回答生成与引用检查；证据不足时明确拒答。
+- **文档管理**：上传、列表、详情、可恢复删除，重启恢复有效上传。
+- **工具调用**：只读工具接口、参数校验、调用限制、执行期限与运行轨迹。
+- **公开搜索**：可选 Brave 搜索；本地资料不足且请求明确提供公开查询词时，搜索一次并返回网页摘要引用。
+- **多轮对话**：会话创建、追问理解、历史隔离、清除和删除；每轮重新检索证据。
+- **工程支持**：统一配置、模型工厂、请求日志、错误处理、API、命令行、打包和评估报告。
 
-## 开发环境
+基本流程：
 
-- Python 3.13
-- 使用虚拟环境管理依赖。
-- 依赖列表见 requirements.txt。
-- 首次加载模型需要联网下载，模型推理在本地执行。
+```text
+问题 → 追问整理（有会话历史时）→ 混合检索 → 证据判断 → 回答与引用检查
+                                   ↑          │
+                                   └─ 重写问题 ┘（最多两次）
+本地证据仍不足 → 可选公开搜索并重新判断，或明确拒答
+```
 
-## 安装依赖
+## 当前限制与待完成
 
-在项目根目录、已激活虚拟环境的终端中执行：
+- 扫描 PDF 的 OCR 尚未实现；当前 PDF 依赖可提取的文本。
+- 外部搜索默认关闭，需要本机配置密钥和每次请求的明确授权；真实服务联调待完成，仅使用搜索摘要。
+- 会话仅存内存，重启后消失；最多保留 6 轮、6000 字符，空闲一小时过期。
+- 文档删除保留隐藏归档，尚无恢复或清空归档接口。
+- 正式重排模型效果、独立评估集和真实多轮理解效果仍需验证。
+- 用户鉴权、持久化会话、其他模型后端、Docker 和 CI 待完成；可视化界面暂缓。
 
-    python -m pip install -r requirements.txt
+项目目前定位本机开发与演示，未实现用户鉴权。
 
-## 运行测试
+## 快速开始
 
-    python -m pytest tests -v
+在项目根目录，使用 Python 3.13 虚拟环境：
 
-## 运行检索
+```powershell
+python -m pip install -e .
+```
 
-启动交互式检索。首次运行会加载本地嵌入模型，并自动读取可用索引或重新构建索引：
+另行安装并启动 Ollama，准备默认生成模型 `qwen3:8b`。默认 Embedding 为 `Qwen/Qwen3-Embedding-0.6B`，首次使用需要下载或准备本地缓存。
 
-    python -m embeddings.demo_pipeline
+可参考 [.env.example](.env.example) 创建 `.env`；不创建也可使用默认配置。基础文档由配置中的目录和文件列表决定。
 
-显式强制重建并保存向量索引：
+启动本地 API：
 
-    python -m ingestion.build_index
+```powershell
+python -m scripts.serve
+```
 
-运行检索评估并生成报告：
+接口文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)。首次问答或上传会初始化知识库和模型。
 
-    python -m evaluation.evaluate_retrieval
+另开终端执行：
 
-评估用例位于 `evaluation/retrieval_cases.json`，报告按分块模式写入 `evaluation/retrieval_report_<chunk_mode>.json`。
+```powershell
+python -m scripts.demo_query "VPN连接失败怎么办？"
+python -m scripts.ingest "C:\资料\指南.pdf"
+python -m scripts.documents list
+python -m scripts.sessions create
+```
 
-## 项目配置
+创建会话后，将返回的编号用于后续提问：
 
-默认配置定义在 `project_config.py`：
+```powershell
+python -m scripts.demo_query "第二步怎么做？" --session-id <会话编号>
+```
 
-- 文档目录：`data/documents`；默认读取 VPN 和打印机中文指南。
-- 分块模式：`boundary`；也可设为 `fixed`。
-- 分块长度与重叠：300 和 50 个字符。
-- 检索数量与最低分数：Top-3，最低余弦相似度 0.5。
-- 索引文件：`data/indexes/knowledge_base.json`。
+## 测试与评估
 
-可通过创建 `ProjectConfig` 并传入 `build_knowledge_base` 使用自定义配置。
+```powershell
+python -m pytest tests -q
+python -m evaluation.benchmark
+python -m evaluation.benchmark --agent
+```
 
-## 运行示例
+截至 2026-11-08，全量测试 **436 项通过**。默认开发集共 24 题，其中 18 道有依据题的 FAISS / Hybrid 来源 Top-1 与 Hit@3 均为 18/18；这不代表完整回答准确率或独立泛化能力。新增搜索与会话测试使用模拟服务或模型。
 
-文档分块：
+## 文档
 
-    python -m ingestion.demo_chunker
+- [开发规范](docs/DEVELOPMENT_SPEC.md) · [完整进度](docs/STATUS.md)
+- [配置](docs/configuration.md) · [安装](docs/installation.md) · [API](docs/api.md) · [命令行](docs/cli.md)
+- [多轮对话](docs/sessions.md) · [公开搜索](docs/web_search.md) · [工具调用](docs/tools.md)
+- [重排序](docs/reranking.md) · [评估](docs/evaluation.md)
 
-中文及跨语言向量相似度示例：
+## 参考项目
 
-    python -m embeddings.demo_embedder
-
-文档加载、分块和向量生成：
-
-    python -m embeddings.demo_pipeline
-
-## 后续计划
-
-- 扩充中文知识文档和检索评估用例。
-- 接入基于检索结果的回答生成。
-- 逐步实现 Agent 工具调用与应用接口。
-
-## 当前限制
-
-- 首次使用嵌入模型时需要联网下载；下载后模型在本地运行。
-- 已实现混合检索、LangGraph 问答、引用校验与 FastAPI；界面暂缓，外部搜索及会话记忆尚未实现。
-## V2.1 混合检索入口
-
-安装更新后的 requirements.txt 后运行：
-
-    python -m generation.demo_hybrid
-
-该入口复用原有 JSON 缓存及 Qwen Embedding，启动时用缓存向量构建 FAISS，并建立 BM25。通过 RRF 融合结果，再交给现有回答生成与引用校验。FAISS 当前在内存运行，重启从 JSON 重建，无需重新生成文档向量。
-
-RRF 分数不能套用原有 0.5 余弦阈值，因此该入口显式使用 min_score=None。相关性不足依赖模型的证据判断与引用校验；尚未接入 LangGraph 查询重写。原 generation.demo_rag 入口保留。
-
-## V2.1 Agent 工作流
-
-    python -m generation.demo_agent
-
-agents/state.py、graph.py、routing.py 和 nodes 模块使用 LangGraph 编排检索、相关性判断、重写与生成。llm/client.py 沿用本地 Ollama。最多两次重写（三次检索），证据不足或模型错误时回退；生成使用原问题和已判断的证据，并保留引用检查。显示节点路径和重写次数，返回状态包含耗时及来源。引用纠正与查询重写独立计数。
-
-判断依赖模型；已接入下述 HTTP API，UI 与外部搜索尚未实现。
-
-## V2.1 HTTP API
-
-    python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-
-打开 http://127.0.0.1:8000/docs 进行交互测试。
-
-- GET /health：进程存活检查；knowledge_ready 表示知识库是否已初始化，不代表 Ollama 健康状态。
-- POST /chat：JSON 请求 {"question":"VPN连接失败"}，返回 answer、answered、citations、retry_count、trace。
-- POST /documents：multipart 表单字段 file，支持 PDF/TXT/MD，单文件最多 5 MiB；文本使用 UTF-8。成功返回 201 及 document_id、filename、chunk_count。上传后立即纳入问答，重启后从 data/uploads 恢复。
-
-首次问答或有效上传会加载模型。模型不可用返回 503；非法文档返回 400，超限 413，问题校验失败 422。上传使用独立目录，不覆盖同名原文件；失败不切换知识库。当前仅支持本机单进程运行，问答和入库串行处理，请勿使用多个 workers。无登录鉴权，不适合直接开放公网。原命令行入口只读取原始知识库，API 上传资料由 API 服务管理。
-
-## 核心评估（界面暂缓）
-
-    python -m evaluation.benchmark
-    python -m evaluation.benchmark --agent
-
-第一条对比三种检索方式；第二条同时运行 24 题本地 Agent 评估。报告默认写入 evaluation/reports 的新文件，不覆盖历史结果。详见 docs/architecture.md 和 docs/api.md。小语料来源命中率不是回答事实准确率。
+- [Enterprise Agentic RAG Platform](https://github.com/ara-5/Enterprise-Agentic-RAG-Platform)
+- [LangGraph](https://github.com/langchain-ai/langgraph)
