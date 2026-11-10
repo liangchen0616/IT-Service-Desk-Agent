@@ -1,93 +1,253 @@
 # IT Service Desk Agent
 
-基于 **LangGraph + RAG** 的本地 IT 服务台问答项目。使用企业文档回答问题，提供来源引用，并支持文档管理、可选公开搜索和多轮对话。
+基于 **LangGraph + RAG** 构建的 IT 服务台智能问答系统。
 
-技术栈：Python 3.13、FastAPI、LangGraph、Ollama、Qwen3 Embedding、FAISS、BM25。
+项目面向企业内部 IT 支持场景，结合本地大语言模型、混合检索和 Agent 工作流，实现知识库问答、问题分析与文档管理。
 
-## 已实现
+## 核心功能
 
-- **知识库入库**：PDF / TXT / Markdown 解析、分块、向量化和 JSON 缓存；PDF 支持页码引用。
-- **混合检索**：FAISS + BM25 + RRF，可选 Cross-Encoder 重排序。
-- **Agent 问答**：检索、证据判断、最多两次问题重写、回答生成与引用检查；证据不足时明确拒答。
-- **文档管理**：上传、列表、详情、可恢复删除，重启恢复有效上传。
-- **工具调用**：只读工具接口、参数校验、调用限制、执行期限与运行轨迹。
-- **公开搜索**：可选 Brave 搜索；本地资料不足且请求明确提供公开查询词时，搜索一次并返回网页摘要引用。
-- **多轮对话**：会话创建、追问理解、历史隔离、清除和删除；每轮重新检索证据。
-- **工程支持**：统一配置、模型工厂、请求日志、错误处理、API、命令行、打包和评估报告。
+- **智能知识问答**：根据企业内部文档回答 IT 相关问题，并提供引用来源。
+- **混合检索**：结合 FAISS 向量检索和 BM25 关键词检索，通过 RRF 融合结果。
+- **Agent 工作流**：使用 LangGraph 编排检索、相关性判断、查询重写和回答生成。
+- **查询重写**：检索结果不足时自动优化问题，最多重写两次。
+- **文档管理**：支持 PDF、TXT、Markdown 文档上传、解析、分块和索引，新增列表、详情及可恢复删除；PDF 支持页码引用。
+- **HTTP API**：通过 FastAPI 提供问答、文档上传和健康检查接口。
+- **检索评估**：支持不同检索方案的效果测试与评估报告生成。
 
-基本流程：
+- **可选公开搜索**：本地资料不足时，可按显式公开查询词搜索网页摘要并提供链接。
+- **多轮对话**：通过会话编号承接追问，支持历史隔离和清除，每轮重新检索证据。
+
+## 技术栈
+
+| 模块 | 技术 |
+|---|---|
+| 开发语言 | Python |
+| Agent 框架 | LangGraph |
+| 大语言模型 | Ollama（本地部署） |
+| Embedding | Qwen3-Embedding-0.6B |
+| 向量检索 | FAISS |
+| 关键词检索 | BM25 |
+| 检索融合 | RRF |
+| API 服务 | FastAPI |
+| 测试 | Pytest |
+
+## 系统工作流程
+
+系统主要分为两个阶段：**知识库构建**和**Agent 智能问答**。
+
+### 1. 知识库构建
 
 ```text
-问题 → 追问整理（有会话历史时）→ 混合检索 → 证据判断 → 回答与引用检查
-                                   ↑          │
-                                   └─ 重写问题 ┘（最多两次）
-本地证据仍不足 → 可选公开搜索并重新判断，或明确拒答
+上传文档（PDF / TXT / Markdown）
+              ↓
+       文档解析与清洗
+              ↓
+       文本分块（Chunking）
+              ↓
+      Qwen3 Embedding 向量化
+              ↓
+       构建知识库索引
+         ├── FAISS 向量索引
+         └── BM25 关键词索引
+              ↓
+         知识库就绪
 ```
 
-## 当前限制与待完成
+### 2. Agent 智能问答
 
-- 扫描 PDF 的 OCR 尚未实现；当前 PDF 依赖可提取的文本。
-- 外部搜索默认关闭，需要本机配置密钥和每次请求的明确授权；真实服务联调待完成，仅使用搜索摘要。
-- 会话仅存内存，重启后消失；最多保留 6 轮、6000 字符，空闲一小时过期。
-- 文档删除保留隐藏归档，尚无恢复或清空归档接口。
-- 正式重排模型效果、独立评估集和真实多轮理解效果仍需验证。
-- 用户鉴权、持久化会话、其他模型后端、Docker 和 CI 待完成；可视化界面暂缓。
+```text
+用户输入问题
+      ↓
+FastAPI 接收请求
+      ↓
+LangGraph Agent
+      ↓
+混合检索（Hybrid Search）
+  ├── FAISS：语义相似度检索
+  └── BM25：关键词匹配检索
+      ↓
+RRF 融合检索结果
+      ↓
+LLM 判断文档相关性
+      ↓
+  ┌── 是否有相关证据？ ──┐
+  │                     │
+  是                    否
+  │                     │
+  │                查询重写
+  │                     ↓
+  │                重新检索
+  │                     ↓
+  │             最多重写 2 次
+  │                     │
+  │             仍无有效证据
+  │                     ↓
+  │                无法可靠回答
+  │
+  ↓
+本地 LLM 生成回答
+      ↓
+引用来源检查与校验
+      ↓
+返回回答、引用及执行信息
+```
 
-项目目前定位本机开发与演示，未实现用户鉴权。
+以上为默认本地问答流程。有会话历史时先整理追问；可选重排位于混合检索之后。启用公开搜索且请求提供公开查询词时，本地证据不足后可搜索一次，重新判断证据再回答。
+
+### 3. 关键机制
+
+| 机制 | 作用 |
+|---|---|
+| Hybrid Search | 结合语义检索与关键词检索，提高召回效果 |
+| RRF Fusion | 融合不同检索器的排序结果 |
+| Relevance Grading | 判断检索文档是否与问题相关 |
+| Query Rewriting | 证据不足时优化查询，最多重写两次 |
+| Answer Generation | 使用本地 LLM 根据检索证据生成回答 |
+| Citation Validation | 检查回答引用，减少无依据的输出 |
+| Fallback | 多次检索失败或模型异常时返回降级结果 |
+
+系统通过 LangGraph 管理各节点之间的执行顺序和条件分支，实现从检索到回答的自动化流程。
+
+**当前版本**已实现本地知识库检索、查询重写、回答生成和引用校验。新增文档管理、PDF 页码引用、只读工具接口、可选重排与公开搜索，以及内存多轮会话。
+
+## 项目结构
+
+```text
+IT-Service-Desk-Agent/
+├── app/             # FastAPI 接口与服务
+├── agents/          # LangGraph Agent 工作流
+├── ingestion/       # 文档加载、分块与索引
+├── embeddings/      # 文本向量化
+├── retrieval/       # 检索与结果融合
+├── vectorstore/     # 向量存储
+├── generation/      # 回答生成与演示入口
+├── llm/             # 大语言模型调用与模型工厂
+├── core/            # 统一配置、日志与异常
+├── tools/           # 知识库检索与公开搜索工具
+├── memory/          # 有限会话历史
+├── scripts/         # 上传、问答与管理命令
+├── evaluation/      # 检索与 Agent 评估
+├── data/            # 知识文档与索引
+├── tests/           # 自动化测试
+├── docs/            # 技术文档
+├── project_config.py
+└── requirements.txt
+```
 
 ## 快速开始
 
-在项目根目录，使用 Python 3.13 虚拟环境：
+### 1. 安装依赖
 
-```powershell
-python -m pip install -e .
+建议使用 Python 3.13 和虚拟环境。
+
+```bash
+python -m pip install -r requirements.txt
 ```
 
-另行安装并启动 Ollama，准备默认生成模型 `qwen3:8b`。默认 Embedding 为 `Qwen/Qwen3-Embedding-0.6B`，首次使用需要下载或准备本地缓存。
+### 2. 准备本地模型
 
-可参考 [.env.example](.env.example) 创建 `.env`；不创建也可使用默认配置。基础文档由配置中的目录和文件列表决定。
+安装并启动 Ollama，确保项目配置的本地大语言模型可用。
 
-启动本地 API：
+首次使用 Embedding 模型时，需要联网下载模型文件。
 
-```powershell
-python -m scripts.serve
+### 3. 构建知识库
+
+将文档放入 `data/documents/` 并在配置中指定文件列表，然后执行：
+
+```bash
+python -m ingestion.build_index
 ```
 
-接口文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)。首次问答或上传会初始化知识库和模型。
+### 4. 启动 Agent
 
-另开终端执行：
-
-```powershell
-python -m scripts.demo_query "VPN连接失败怎么办？"
-python -m scripts.ingest "C:\资料\指南.pdf"
-python -m scripts.documents list
-python -m scripts.sessions create
+```bash
+python -m generation.demo_agent
 ```
 
-创建会话后，将返回的编号用于后续提问：
+运行混合检索问答：
 
-```powershell
-python -m scripts.demo_query "第二步怎么做？" --session-id <会话编号>
+```bash
+python -m generation.demo_hybrid
 ```
+
+### 5. 启动 API
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+访问 API 文档：
+
+http://127.0.0.1:8000/docs
+
+主要接口：
+
+| 接口 | 功能 |
+|---|---|
+| `GET /health` | 服务健康检查 |
+| `POST /chat` | 智能问答 |
+| `POST /documents` | 上传知识文档 |
+| `GET /documents`、`GET /documents/{id}` | 文档列表与详情 |
+| `DELETE /documents/{id}` | 从知识库移除并保留归档 |
+| `POST /sessions`、`GET /sessions/{id}` | 创建会话与查看历史 |
+| `DELETE /sessions/{id}/history`、`DELETE /sessions/{id}` | 清除历史与删除会话 |
+
+`POST /chat` 可传 `session_id` 承接追问；可选 `public_web_query` 明确指定允许外发的公开查询词。用法见 [API](docs/api.md) 和 [命令行说明](docs/cli.md)。
 
 ## 测试与评估
 
-```powershell
-python -m pytest tests -q
+运行自动化测试：
+
+```bash
+python -m pytest tests -v
+```
+
+运行检索评估：
+
+```bash
 python -m evaluation.benchmark
+```
+
+运行 Agent 评估：
+
+```bash
 python -m evaluation.benchmark --agent
 ```
 
-截至 2026-11-08，全量测试 **436 项通过**。默认开发集共 24 题，其中 18 道有依据题的 FAISS / Hybrid 来源 Top-1 与 Hit@3 均为 18/18；这不代表完整回答准确率或独立泛化能力。新增搜索与会话测试使用模拟服务或模型。
+最近全量测试为 **436 项通过**（2026-11-08）。外部搜索与会话集成测试使用模拟服务或模型；开发集指标不代表完整回答准确率。
 
-## 文档
+## 开发进度
 
-- [开发规范](docs/DEVELOPMENT_SPEC.md) · [完整进度](docs/STATUS.md)
-- [配置](docs/configuration.md) · [安装](docs/installation.md) · [API](docs/api.md) · [命令行](docs/cli.md)
-- [多轮对话](docs/sessions.md) · [公开搜索](docs/web_search.md) · [工具调用](docs/tools.md)
-- [重排序](docs/reranking.md) · [评估](docs/evaluation.md)
+**已实现**
+
+- 文档解析、分块与向量化
+- FAISS + BM25 混合检索
+- LangGraph Agent 工作流
+- 查询重写与重试控制
+- 本地 LLM 回答生成与引用校验
+- FastAPI 问答与文档管理、PDF 页码引用
+- 统一配置、日志、模型工厂和命令行工具
+- 可选 Cross-Encoder 重排、公开搜索与网页摘要引用
+- 内存多轮会话及只读工具调用
+- 自动化测试与检索评估
+
+**后续计划**
+
+- 扫描 PDF OCR、持久化会话
+- 真实公开搜索联调、正式重排效果和独立题集验证
+- 文档归档恢复与清空接口
+- 可视化交互界面
+- 进一步完善部署、安全性和评估体系
+
+公开搜索默认关闭，需配置密钥并在请求中明确提供公开查询词；会话仅存内存，重启后消失。详细配置与进度见 [配置说明](docs/configuration.md) 和 [开发进度](docs/STATUS.md)。
+
+目前项目主要面向本地开发与演示，尚未实现用户鉴权，不建议直接部署到公网。
 
 ## 参考项目
 
+本项目在学习和实践过程中参考了：
+
 - [Enterprise Agentic RAG Platform](https://github.com/ara-5/Enterprise-Agentic-RAG-Platform)
 - [LangGraph](https://github.com/langchain-ai/langgraph)
+
+项目基于实际开发需求独立组织模块，并逐步完善企业 IT 服务台的 Agentic RAG 工作流程。
