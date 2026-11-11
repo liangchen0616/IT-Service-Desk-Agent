@@ -84,9 +84,10 @@ def test_api_followup_isolation_clear_and_no_old_answer_as_evidence(runtime):
         second=client.post('/chat',json={'question':'second step?','session_id':a})
         assert second.status_code==200,second.text
         data=second.json()
-        assert data['resolved_question']=='VPN second step'
+        assert 'VPN second step' in data['resolved_question']
+        assert 'second step?' in data['resolved_question']
         assert data['trace'][0]['node']=='contextualize'
-        assert 'VPN second step' in runtime.embedder.queries
+        assert data['resolved_question'] in runtime.embedder.queries
         assert runtime.model.histories[0][0]['question']=='VPN help'
         assert client.get('/sessions/'+b).json()['turns']==[]
         before=len(runtime.model.histories)

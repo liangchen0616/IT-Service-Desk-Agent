@@ -89,9 +89,11 @@ def evaluate_agent(cases, agent, progress=None):
     records=[]
     for case in cases:
         start=perf_counter()
+        generation_contexts=None
         try:
             state=agent.invoke(case["query"])
             result=state["result"]
+            generation_contexts=getattr(result,"generation_contexts",None)
             citations=[{"source":c.source,"page":getattr(c,"page",None),
                         "quote":getattr(c,"quote",None)} for c in result.citations]
             answered,answer=result.answered,result.answer
@@ -106,6 +108,7 @@ def evaluate_agent(cases, agent, progress=None):
         outcome=classify_answer(case,answered,citations,error)
         record={**case,"answered":answered,"answer":answer,"citations":citations,
             "sources":[c["source"] for c in citations],"outcome":outcome,
+            "generation_contexts":generation_contexts,
             "passed":outcome in {"supported_answer","correct_refusal"},
             "error":error,"error_type":error_type,"trace":trace,"retry_count":retries,
             "elapsed_ms":(perf_counter()-start)*1000}

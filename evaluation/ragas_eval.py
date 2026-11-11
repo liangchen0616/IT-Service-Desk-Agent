@@ -40,6 +40,10 @@ def read_cases(path):
             quote = citation.get("quote")
             if quote is not None and (not isinstance(quote, str) or len(quote) > 20000):
                 raise ValueError("Invalid quote")
+        contexts = case.get("generation_contexts")
+        if contexts is not None and (not isinstance(contexts, list) or len(contexts)>100 or
+                                    any(not isinstance(c,str) or len(c)>100000 for c in contexts)):
+            raise ValueError("Invalid generation contexts")
     return cases, hashlib.sha256(raw).hexdigest()
 
 
@@ -91,11 +95,16 @@ def make_judge(model, timeout):
     return score
 
 
-async def evaluate_cases(cases, judge):
+async def evaluate_cases(cases, judge, context_scope="citation_excerpts"):
+    if context_scope not in {"citation_excerpts", "generation_contexts"}:
+        raise ValueError("Invalid context scope")
+    metric_names = METRICS if context_scope=="citation_excerpts" else ("generation_faithfulness", METRICS[1])
     records = []
     for case in cases:
         record = {"id": case["id"], "scores": {}, "errors": {}}
         contexts = list(dict.fromkeys(c["quote"] for c in case["citations"] if c.get("quote", "") and c["quote"].strip()))
+        if context_scope=="generation_contexts":
+            contexts = case.get("generation_contexts") or []
         if case.get("error") or case.get("outcome") == "execution_error":
             record["skipped"] = "agent_error"
         elif not case["answered"]:
@@ -103,12 +112,12 @@ async def evaluate_cases(cases, judge):
         elif not case["query"].strip() or not case["answer"].strip():
             record["skipped"] = "empty_text"
         else:
-            for name in METRICS:
-                if name == "citation_faithfulness" and not contexts:
-                    record["errors"][name] = "missing_citation_context"
+            for name in metric_names:
+                if name in {"citation_faithfulness", "generation_faithfulness"} and not contexts:
+                    record["errors"][name] = "missing_"+context_scope
                     continue
                 try:
-                    value = float(await judge(name, case["query"], case["answer"], contexts))
+                    value = float(await judge("citation_faithfulness" if name=="generation_faithfulness" else name, case["query"], case["answer"], contexts))
                     if not math.isfinite(value) or not 0 <= value <= 1:
                         raise ValueError("Invalid score")
                     if name == "answer_addresses_question" and value not in (0, 1):
@@ -118,7 +127,7 @@ async def evaluate_cases(cases, judge):
                     record["errors"][name] = type(exc).__name__
         records.append(record)
     summary = {}
-    for name in METRICS:
+    for name in metric_names:
         values = [r["scores"][name] for r in records if name in r["scores"]]
         summary[name] = {"mean": sum(values)/len(values) if values else None,
                          "scored": len(values),
@@ -130,6 +139,7 @@ async def evaluate_cases(cases, judge):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Local RAGAs scoring against citation excerpts")
     parser.add_argument("report", type=Path)
+    parser.add_argument("--context", choices=["citation_excerpts", "generation_contexts"], default="citation_excerpts")
     parser.add_argument("--model", default="qwen3:8b")
     parser.add_argument("--timeout", type=float, default=180)
     parser.add_argument("--output", type=Path)
@@ -143,9 +153,9 @@ def main(argv=None):
     try:
         cases, digest = read_cases(args.report)
         judge = make_judge(args.model, args.timeout)
-        result = asyncio.run(evaluate_cases(cases, judge))
+        result = asyncio.run(evaluate_cases(cases, judge, args.context))
         result.update(created_at=datetime.now(timezone.utc).isoformat(), source_sha256=digest,
-                      evaluator_model=args.model, ragas_version="0.3.9", context_scope="citation_excerpts",
+                      evaluator_model=args.model, ragas_version="0.3.9", context_scope=args.context,
                       notes="Judge estimates, not factual truth; means exclude skipped/failed scores. AspectCritic binary relevance is not RAGAs ResponseRelevancy.")
         output.parent.mkdir(parents=True, exist_ok=True)
         with output.open("x", encoding="utf-8") as handle:

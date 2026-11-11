@@ -39,3 +39,14 @@ false_refusal_rate 分母为有依据题数；unexpected_answer_rate 分母为�
 报告：benchmark-20261110-152450-860994.json。GET /metrics 可读取默认 data/reports 中最近修改报告的摘要；不是 Prometheus 文本接口，也不是实时运行指标。缺报告返回 404，最新报告无效返回 503，仅检索报告的 agent 为 null。原始报告保留逐题信息，应留在本地；Git 默认忽略 data/reports。
 
 可选 RAGAs 评审入口为 `python -m evaluation.ragas_eval <benchmark报告>`。评分针对引用片段和切题性，单独输出 ragas-*.json，不混入 /metrics 的 benchmark 汇总。安装、范围和限制见 [RAGAs 说明](ragas.md)。
+
+
+## 多轮与文档生命周期真实验收
+
+`python -m evaluation.live_acceptance --output data/reports/acceptance-唯一时间.json`
+
+该命令显式运行真实本地模型，使用临时基础文档、上传目录和 SQLite 数据库，不操作现有用户文档或会话。覆盖首轮回答、连续追问、话题切换、无依据拒答、删除文档后拒答、恢复文档后回答、SQLite 重启恢复及重启后追问。正常完成后自动清理临时数据，报告保存在指定新文件，禁止覆盖已有报告。
+
+检查的是回答/拒答标志、预期来源和历史轮数；报告保留整理后的问题、回答及引用，供人工核对，不代表逐条事实准确性。模型必须提前准备；此命令不加入默认 pytest 或 CI。遇到服务错误时命令失败，不宣称验收通过。
+
+2026-11-11 实测：8/8 通过，报告 acceptance-20261111.json。此处“重启”是同一进程重新创建 Runtime 并读取 SQLite/上传目录，复用已加载的向量模型；尚不等同于操作系统进程或容器重启验收。

@@ -33,6 +33,13 @@ class SessionStore:
             self._sessions[identifier]={"touched":self.clock(),"turns":[]}
             return identifier
 
+    def list_sessions(self):
+        with self._lock:
+            self._expire()
+            entries = sorted(self._sessions.items(), key=lambda pair: (pair[1]["touched"], pair[0]), reverse=True)
+            return [{"session_id": identifier, "turn_count": len(entry["turns"])}
+                    for identifier, entry in entries]
+
     def history(self,identifier):
         with self._lock: return deepcopy(self._entry(identifier)["turns"])
 

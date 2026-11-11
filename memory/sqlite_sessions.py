@@ -50,6 +50,19 @@ class SQLiteSessionStore:
             connection.execute("INSERT INTO agent_sessions VALUES (?,?,?)",(identifier,self.clock(),"[]"))
             return identifier
 
+    def list_sessions(self):
+        if not self.path.exists():
+            return []
+        with self._transaction() as connection:
+            rows = connection.execute("SELECT id, turns FROM agent_sessions ORDER BY touched DESC, id DESC").fetchall()
+            result = []
+            for identifier, raw in rows:
+                turns = json.loads(raw)
+                if not isinstance(turns, list):
+                    raise ValueError("Invalid session history")
+                result.append({"session_id": identifier, "turn_count": len(turns)})
+            return result
+
     def history(self,identifier):
         with self._transaction() as connection:
             turns=self._read(connection,identifier)

@@ -112,3 +112,23 @@ Added evaluation.ragas_eval with an explicit local Ollama adapter, citation-exce
 ### Container deployment support — November 10, 2026
 
 Added wheel-based non-root Docker image, allowlisted build context, Compose API/Ollama services, named data/model volumes, loopback-only host API port, process health checks and non-overwriting initialization. Container-only entrypoint binds 0.0.0.0 with one worker; normal CLI remains loopback-only. AGENT_OLLAMA_ENDPOINT accepts only local/default and Compose service endpoints with existing no-proxy/no-redirect transport. Full tests: 501 passed, 1 optional RAGAs skip. Compose YAML parsed locally; Docker executable unavailable, so image build, runtime and volume persistence remain unverified. Tags are not digest-pinned; deployment guide records provisioning and acceptance gaps. UI remains deferred.
+
+
+### Session discovery — November 11, 2026
+
+Added GET /sessions and CLI list with both storage backends. Lists IDs and retained turn counts by recent activity without touching expiry or loading models. SQLite listing survives restart and does not create a missing database. Existing local single-user access model remains unchanged.
+
+
+### Real-model workflow acceptance — November 11, 2026
+
+Added an opt-in disposable-corpus acceptance CLI. Real local qwen3:8b run passed 8/8 checks for first answer, follow-up, topic switch, refusal, deletion, restoration, persistent session reload and follow-up after Runtime recreation. Recreation uses a fresh Runtime and SQLite connection in the same process, reusing the embedder; this is not an OS process/container restart test. Automatic checks validate answer flags and sources, not exhaustive factual accuracy. Report remains local under data/reports.
+
+
+### Follow-up constraint preservation — November 11, 2026
+
+Preserve the current user question verbatim alongside contextual rewriting unless already included. Overlong combinations fall back to the intact original, avoiding partial negation/constraint truncation. Generation prioritizes unresolved steps. Full regression: 511 passed, 1 optional skip. Real qwen3:8b acceptance: 8/8; the password-already-checked follow-up now recommends exiting/reopening the VPN client without repeating credential checks. This is one observed quality improvement, not a universal guarantee.
+
+
+### Generation-context evaluation — November 11, 2026
+
+Capture exact bounded source text supplied to generation, including citation-repair and model-refusal paths, in internal RagAnswer and benchmark reports. Ordinary chat/metrics responses remain unchanged. Optional RAGAs generation_contexts mode reports separately named generation_faithfulness; old reports do not silently substitute citation excerpts. Full real-model scoring remains pending.

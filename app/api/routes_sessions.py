@@ -4,6 +4,13 @@ from app.api.dependencies import get_runtime
 router=APIRouter()
 
 
+@router.get("/sessions")
+def list_sessions(runtime=Depends(get_runtime)):
+    with runtime.lock:
+        sessions = runtime.sessions.list_sessions()
+        return {"sessions": sessions, "total": len(sessions)}
+
+
 @router.post("/sessions",status_code=201)
 def create(runtime=Depends(get_runtime)):
     with runtime.lock: return {"session_id":runtime.sessions.create()}

@@ -191,7 +191,7 @@ http://127.0.0.1:8000/docs
 | `GET /documents`、`GET /documents/{id}` | 文档列表与详情 |
 | `DELETE /documents/{id}` | 从知识库移除并保留归档 |
 | `GET /document-archives`、`POST /document-archives/{id}/restore` | 查看归档与恢复文档 |
-| `POST /sessions`、`GET /sessions/{id}` | 创建会话与查看历史 |
+| `GET /sessions`、`POST /sessions`、`GET /sessions/{id}` | 会话列表、创建与查看历史 |
 | `DELETE /sessions/{id}/history`、`DELETE /sessions/{id}` | 清除历史与删除会话 |
 
 `POST /chat` 可传 `session_id` 承接追问；可选 `public_web_query` 明确指定允许外发的公开查询词。用法见 [API](docs/api.md) 和 [命令行说明](docs/cli.md)。
@@ -218,7 +218,7 @@ python -m evaluation.benchmark
 python -m evaluation.benchmark --agent
 ```
 
-最近全量测试为 **501 项通过、1 项可选测试跳过**（2026-11-10）。外部搜索与会话集成测试使用模拟服务或模型；开发集指标不代表完整回答准确率。
+最近全量测试为 **517 项通过、1 项可选测试跳过**（2026-11-11）。外部搜索与会话集成测试使用模拟服务或模型；开发集指标不代表完整回答准确率。
 
 真实本地模型开发集验收：**24/24 通过**，平均约 3.54 秒；RAGAs 已完成单题链路验证，尚未完成全量质量验收。
 
