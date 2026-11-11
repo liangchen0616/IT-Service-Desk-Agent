@@ -1,0 +1,34 @@
+name: it-service-desk-agent
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      AGENT_HOME: /data
+      AGENT_OLLAMA_ENDPOINT: http://ollama:11434/api/chat
+      AGENT_LLM_MODEL: qwen3:8b
+      AGENT_SESSION_BACKEND: sqlite
+      HF_HOME: /cache/huggingface
+    volumes:
+      - agent-data:/data
+      - embedding-cache:/cache/huggingface
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+volumes:
+  agent-data:
+  embedding-cache:
+  ollama-models:

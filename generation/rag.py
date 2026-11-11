@@ -60,6 +60,7 @@ class Citation:
     page: int | None = None
     url: str | None = None
     source_type: str = "local"
+    extraction_method: str | None = None
 
 
 @dataclass
@@ -182,5 +183,6 @@ class RagAssistant:
                 start_index=chunk.start_index, end_index=chunk.end_index,
                 quote=quote, page=chunk.metadata.get("page"),
                 url=chunk.metadata.get("url"), source_type=chunk.metadata.get("source_type", "local"),
+                extraction_method=chunk.metadata.get("extraction_method"),
             ))
         return RagAnswer(answer.strip(), citations, True)

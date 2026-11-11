@@ -1,0 +1,70 @@
+name: Tests and package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python 3.13 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+      - name: Install dependencies and build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt 'setuptools>=77' wheel
+          python -m pip check
+      - name: Run all tests
+        run: python -B -m pytest tests -q -p no:cacheprovider --junitxml=test-results.xml
+      - name: Save test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-${{ matrix.os }}
+          path: test-results.xml
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Build and install wheel
+        run: |
+          python -m pip wheel . --no-deps --no-build-isolation --wheel-dir dist
+          python -m pip install --no-deps --force-reinstall dist/*.whl
+      - name: Check installed package outside source tree
+        run: |
+          cd "$RUNNER_TEMP"
+          python -I -c "from importlib.resources import files; from app.main import create_app; from memory.sqlite_sessions import SQLiteSessionStore; assert files('core').joinpath('resources/vpn_guide_zh.txt').is_file(); assert files('evaluation').joinpath('dataset.json').is_file(); assert '/metrics' in create_app().openapi()['paths']"
+          it-agent-query --help
+          it-agent-ingest --help
+          it-agent-documents --help
+          it-agent-serve --help
+          it-agent-init --data-dir "$RUNNER_TEMP/agent-smoke"

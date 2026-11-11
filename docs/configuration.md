@@ -27,3 +27,5 @@ benchmark 已接入统一配置和模型工厂，支持 --env-file 指定配置�
 工具执行期限由 AGENT_TOOL_TIMEOUT 配置，默认 180 秒，必须是有限正数。这是协作式期限而非强制中断时间，详见 [工具调用](tools.md)。
 
 可选公开搜索配置：AGENT_WEB_SEARCH_ENABLED（默认 false）、AGENT_WEB_SEARCH_API_KEY（不进入报告）、AGENT_WEB_SEARCH_TIMEOUT（默认 15 秒）。详情见 web_search.md。
+
+会话配置：AGENT_SESSION_BACKEND=memory 或 sqlite；AGENT_SESSION_DB_PATH 默认为 data/sessions/history.sqlite3；AGENT_SESSION_TTL 默认为 3600 秒。SQLite 重启恢复说明见 sessions.md。

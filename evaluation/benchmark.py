@@ -36,6 +36,11 @@ def parse_dataset(raw):
         source = case.get("expected_source")
         if case["answerable"] and (not isinstance(source, str) or not source.strip()): raise ValueError("Missing source")
         if not case["answerable"] and source is not None: raise ValueError("Negative case must not specify source")
+        page=case.get("expected_page")
+        quote=case.get("expected_quote")
+        if page is not None and (type(page) is not int or page<=0): raise ValueError("Invalid expected_page")
+        if quote is not None and (not isinstance(quote,str) or not quote.strip() or len(quote)>200): raise ValueError("Invalid expected_quote")
+        if not case["answerable"] and (page is not None or quote is not None): raise ValueError("Negative case cannot require evidence")
     return cases
 
 
@@ -62,25 +67,63 @@ def evaluate_retrieval(cases, retrievers, top_k=3):
     return reports
 
 
+def classify_answer(case, answered, citations, error):
+    if error: return "execution_error"
+    if not case["answerable"]:
+        return "unexpected_answer" if answered else "unexpected_citation" if citations else "correct_refusal"
+    if not answered: return "false_refusal"
+    matches=[c for c in citations if c["source"]==case["expected_source"]]
+    if not matches: return "wrong_source"
+    page=case.get("expected_page")
+    if page is not None:
+        matches=[c for c in matches if c["page"]==page]
+        if not matches: return "wrong_page"
+    quote=case.get("expected_quote")
+    if quote is not None and not any(quote in (c["quote"] or "") for c in matches):
+        return "missing_evidence"
+    return "supported_answer"
+
+
 def evaluate_agent(cases, agent, progress=None):
-    records = []
+    if not cases: raise ValueError("Evaluation cases must not be empty")
+    records=[]
     for case in cases:
-        start = perf_counter()
-        state = agent.invoke(case["query"])
-        result = state["result"]
-        sources = [c.source for c in result.citations]
-        passed = not state.get("error") and result.answered == case["answerable"]
-        if case["answerable"]: passed = passed and case["expected_source"] in sources
-        else: passed = passed and not sources
-        record = {**case, "answered": result.answered, "sources": sources,
-            "answer": result.answer, "passed": bool(passed), "retry_count": state["retry_count"],
-            "citations": [{"source": c.source, "page": getattr(c, "page", None), "quote": getattr(c, "quote", None)} for c in result.citations],
-            "error": state.get("error"), "trace": state["trace"], "elapsed_ms": (perf_counter()-start)*1000}
+        start=perf_counter()
+        try:
+            state=agent.invoke(case["query"])
+            result=state["result"]
+            citations=[{"source":c.source,"page":getattr(c,"page",None),
+                        "quote":getattr(c,"quote",None)} for c in result.citations]
+            answered,answer=result.answered,result.answer
+            error=state.get("error")
+            error_type=None
+            trace,retries=state["trace"],state["retry_count"]
+        except Exception as exc:
+            # Preserve the rest of the evaluation without exposing exception payloads.
+            citations,answered,answer=[],False,""
+            error,error_type="Agent invocation failed",type(exc).__name__
+            trace,retries=[],0
+        outcome=classify_answer(case,answered,citations,error)
+        record={**case,"answered":answered,"answer":answer,"citations":citations,
+            "sources":[c["source"] for c in citations],"outcome":outcome,
+            "passed":outcome in {"supported_answer","correct_refusal"},
+            "error":error,"error_type":error_type,"trace":trace,"retry_count":retries,
+            "elapsed_ms":(perf_counter()-start)*1000}
         records.append(record)
         if progress: progress(record)
-    latencies = sorted(v["elapsed_ms"] for v in records)
-    return {"total": len(records), "passed": sum(v["passed"] for v in records),
-        "p95_ms": latencies[ceil(.95*len(latencies))-1], "cases": records}
+    outcomes=("supported_answer","correct_refusal","false_refusal","unexpected_answer",
+              "unexpected_citation","wrong_source","wrong_page","missing_evidence","execution_error")
+    counts={name:sum(r["outcome"]==name for r in records) for name in outcomes}
+    positives=sum(c["answerable"] for c in cases)
+    negatives=len(cases)-positives
+    latencies=sorted(r["elapsed_ms"] for r in records)
+    return {"total":len(records),"passed":sum(r["passed"] for r in records),
+        "positive_count":positives,"negative_count":negatives,"outcome_counts":counts,
+        "false_refusal_rate":counts["false_refusal"]/positives if positives else None,
+        "unexpected_answer_rate":counts["unexpected_answer"]/negatives if negatives else None,
+        "execution_error_rate":counts["execution_error"]/len(records),
+        "mean_ms":sum(latencies)/len(latencies),
+        "p95_ms":latencies[ceil(.95*len(latencies))-1],"cases":records}
 
 
 def run_benchmark(cases, config, *, include_agent=False, embedder=None,

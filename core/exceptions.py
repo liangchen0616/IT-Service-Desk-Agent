@@ -1,4 +1,8 @@
 """Shared domain failures; HTTP mapping belongs to the API layer."""
+class OcrError(RuntimeError):
+    """Local OCR engine or rendering failure."""
+
+
 class LocalModelError(RuntimeError):
     """Local model transport or output failure."""
 

@@ -1,4 +1,5 @@
 import json
+import os
 from http.client import HTTPException
 from math import isfinite
 from urllib.error import HTTPError, URLError
@@ -25,6 +26,12 @@ class OllamaChat:
             raise ValueError("Choose a local model, such as qwen3:8b.")
         if type(timeout) not in (int, float) or not isfinite(timeout) or timeout <= 0:
             raise ValueError("timeout must be a positive finite number.")
+        endpoint = os.environ.get("AGENT_OLLAMA_ENDPOINT")
+        if endpoint is not None:
+            allowed = {"http://127.0.0.1:11434/api/chat", "http://ollama:11434/api/chat"}
+            if endpoint not in allowed:
+                raise ValueError("AGENT_OLLAMA_ENDPOINT must be the local or Compose Ollama endpoint")
+            self.ENDPOINT = endpoint
         self.model_name = model_name.strip()
         self.timeout = timeout
         self._opener = build_opener(ProxyHandler({}), _NoRedirect())

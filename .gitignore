@@ -227,3 +227,8 @@ logs/
 .idea/
 data/indexes/
 data/uploads/
+# Private conversation history
+data/sessions/
+
+# Evaluation reports can contain document excerpts
+data/reports/

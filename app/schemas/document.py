@@ -29,3 +29,12 @@ class DocumentDeleted(BaseModel):
     document_id: str
     filename: str
     deleted: bool
+
+
+class ArchiveInfo(DocumentInfo):
+    archive_id: str
+
+
+class ArchiveList(BaseModel):
+    archives: list[ArchiveInfo]
+    total: int

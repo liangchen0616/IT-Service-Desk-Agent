@@ -5,8 +5,8 @@ from tempfile import TemporaryDirectory
 from uuid import uuid4
 from pypdf.errors import PdfReadError
 from ingestion.knowledge_base import build_knowledge_base, load_documents
-from app.schemas.document import DocumentResponse, DocumentInfo, DocumentDetail, DocumentList, DocumentDeleted
-from app.services.upload_catalog import find_upload, published_uploads, tag_upload
+from app.schemas.document import DocumentResponse, DocumentInfo, DocumentDetail, DocumentList, DocumentDeleted, ArchiveInfo, ArchiveList
+from app.services.upload_catalog import find_upload, published_uploads, tag_upload, find_archive, archived_uploads
 
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 
@@ -92,3 +92,33 @@ def delete_document(runtime, document_id):
         if combined is not None:
             runtime.items, runtime.agent = combined, agent
         return DocumentDeleted(document_id=document_id, filename=path.name, deleted=True)
+
+
+def list_archives(runtime):
+    with runtime.lock:
+        records=[]
+        for archive_id,folder,document in archived_uploads(runtime.uploads):
+            info=describe_upload(folder,document).model_dump()
+            info["document_id"]=archive_id[:32]
+            records.append(ArchiveInfo(**info,archive_id=archive_id))
+        return ArchiveList(archives=records,total=len(records))
+
+
+def restore_document(runtime, archive_id):
+    with runtime.lock:
+        folder,document=find_archive(runtime.uploads,archive_id)
+        document_id=archive_id[:32]
+        destination=runtime.uploads/document_id
+        if destination.exists() or destination.is_symlink():
+            raise InvalidDocument("该编号已有有效文档，不能覆盖恢复")
+        if destination.resolve().parent!=runtime.uploads.resolve():
+            raise InvalidDocument("恢复路径无效")
+        runtime.ensure_ready()
+        config=replace(runtime.config,documents_dir=folder/"documents",
+                       file_names=(document.name,),index_path=folder/"index.json")
+        kb=build_knowledge_base(config,runtime.embedder,use_cache=True)
+        combined=runtime.items+tag_upload(kb.retriever.store.export_items(),document_id)
+        agent=runtime.make_agent(combined)
+        folder.rename(destination)
+        runtime.items,runtime.agent=combined,agent
+        return DocumentResponse(document_id=document_id,filename=document.name,chunk_count=kb.chunk_count)

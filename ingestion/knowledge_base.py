@@ -13,7 +13,7 @@ from vectorstore.json_store import IndexMismatchError, JsonVectorStore
 
 
 # Increase this when changing document extraction or embedding behavior.
-PIPELINE_VERSION = 2
+PIPELINE_VERSION = 3
 
 
 @dataclass
@@ -36,6 +36,8 @@ def compute_signature(config: ProjectConfig) -> str:
         files.append({"name": filename, "sha256": digest.hexdigest()})
     snapshot = {
         "pipeline_version": PIPELINE_VERSION,
+        "ocr": {"enabled":config.ocr_enabled,"language":config.ocr_language,
+                "command":config.ocr_command,"max_pages":config.ocr_max_pages},
         "model_name": config.model_name,
         "chunk_mode": config.chunk_mode,
         "chunk_size": config.chunk_size,
@@ -47,7 +49,11 @@ def compute_signature(config: ProjectConfig) -> str:
 
 
 def load_documents(config: ProjectConfig) -> list[Document]:
-    loader = DocumentLoader()
+    ocr=None
+    if config.ocr_enabled:
+        from ingestion.ocr import TesseractOcr
+        ocr=TesseractOcr(config.ocr_language,config.ocr_timeout,config.ocr_command)
+    loader = DocumentLoader(ocr=ocr,ocr_max_pages=config.ocr_max_pages)
     readers = {
         ".txt": loader.load_txt,
         ".md": loader.load_markdown,

@@ -80,3 +80,35 @@ Added Brave snippet search after exhausted local retrieval, enabled only by serv
 ### Bounded in-memory conversations — November 8, 2026
 
 Added explicit session lifecycle and optional chat session_id. History is bounded by turns, characters, session count and idle expiry. A rewrite-model contextualizer resolves follow-up questions before normal retrieval; historical answers are not supplied as evidence. Every turn retrieves current knowledge and retains citation checks. Failed turns are not appended. Public search authorization remains per-request. Sessions are process-local and reset at restart; persistence, authentication and multi-instance storage remain pending.
+
+### Optional scanned PDF OCR — November 10, 2026
+
+Added local Tesseract fallback for pages without extractable text, optional PDFium/Pillow dependencies, configurable language/command/page limit/process timeout, bounded rendering and temporary-file cleanup. OCR output retains physical page numbers and extraction provenance through citations. Parser settings participate in cache signatures. Real engine installation and multilingual scan quality remain unverified; pages with partial text layers do not trigger OCR.
+
+### Evidence-aware quality reporting — November 10, 2026
+
+Agent evaluation accepts optional expected_page and expected_quote labels, requiring all evidence constraints to match one citation. Reports distinguish refusals, unexpected answers/citations, source/page/evidence failures and execution errors, with explicit denominators. Individual invocation exceptions are recorded without exception payloads and do not stop subsequent cases. These are automatic label checks, not a factual-correctness guarantee or independent blind evaluation.
+
+### Persistent conversation storage — November 10, 2026
+
+Added optional SQLite session storage using short atomic transactions, with persistent expiry timestamps and the same history/count limits. Memory remains the default. Runtime selects storage from configuration; create/read/clear/delete APIs retain their existing contracts. Restart recovery and rollback are tested with real temporary databases. No automatic memory migration, user authentication, backup or multi-process whole-turn coordination is implemented.
+
+### Archived document restoration — November 10, 2026
+
+Added archive listing and restoration API/CLI. Restoration retains the original document ID, refuses destination conflicts, prepares the replacement index/agent before publication, and atomically renames the archive under the runtime lock. Tests cover live retrieval, cold restore/restart, failed rebuilding/rename and repeated restore. Permanent purge remains unimplemented.
+
+### Evaluation summary endpoint and real validation — November 10, 2026
+
+Added GET /metrics for bounded, validated summaries of the latest default benchmark report without model initialization. No case text, config or local paths are returned. Missing reports return 404; invalid newest reports return 503 without silent fallback. Report artifacts are ignored by Git. Full tests: 479 passed. Actual local qwen3:8b development-set run: 24/24 passed (18 supported answers, 6 correct refusals), mean 3536.57 ms and P95 7901.76 ms. This is not independent factual-quality validation. Real OCR, web search and reranking validation remain pending; CI is the next delivery milestone, followed by RAGAs and containers. UI remains deferred.
+
+### CI configuration — November 10, 2026
+
+Added GitHub Actions for push, pull requests and manual dispatch with Windows/Ubuntu Python 3.13 jobs. Checks dependency compatibility, full tests, wheel build/install and installed resources/CLI outside the source tree. Uses read-only repository permissions, offline model flags and seven-day JUnit artifacts; no model-quality claims or deployment. Local Windows: 479 tests passed, pip check passed, wheel and installed-package checks passed using existing dependencies. Remote Actions and clean Linux installation remain unverified until pushed. Next planned module: optional RAGAs evaluation; UI remains deferred.
+
+### Optional local RAGAs judging — November 10, 2026
+
+Added evaluation.ragas_eval with an explicit local Ollama adapter, citation-excerpt Faithfulness and custom binary AspectCritic relevance. Reads existing Agent reports; preserves input hash and context scope, skips refusals/Agent errors, reports per-metric failures and valid denominators, never overwrites output. No full retrieval-context or standard ResponseRelevancy claim. Optional dependencies are pinned after fixing a real import incompatibility. Main regression: 494 passed / 1 optional skip. Real-library focused tests: 16 passed in a temporary environment. One real qwen3:8b case scored faithfulness 0.2 and binary relevance 1 with no execution errors; full quality validation remains pending. Next planned delivery module: Docker/Compose; UI remains deferred.
+
+### Container deployment support — November 10, 2026
+
+Added wheel-based non-root Docker image, allowlisted build context, Compose API/Ollama services, named data/model volumes, loopback-only host API port, process health checks and non-overwriting initialization. Container-only entrypoint binds 0.0.0.0 with one worker; normal CLI remains loopback-only. AGENT_OLLAMA_ENDPOINT accepts only local/default and Compose service endpoints with existing no-proxy/no-redirect transport. Full tests: 501 passed, 1 optional RAGAs skip. Compose YAML parsed locally; Docker executable unavailable, so image build, runtime and volume persistence remain unverified. Tags are not digest-pinned; deployment guide records provisioning and acceptance gaps. UI remains deferred.

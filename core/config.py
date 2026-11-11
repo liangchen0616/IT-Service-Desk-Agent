@@ -24,7 +24,15 @@ class ProjectConfig:
         "vpn_guide_zh.txt",
         "printer_guide_zh.txt",
     )
+    session_backend: str = "memory"
+    session_db_path: Path = PROJECT_ROOT / "data" / "sessions" / "history.sqlite3"
+    session_ttl: int = 3600
     model_name: str = "Qwen/Qwen3-Embedding-0.6B"
+    ocr_enabled: bool = False
+    ocr_language: str = "chi_sim+eng"
+    ocr_timeout: float = 60
+    ocr_command: str = "tesseract"
+    ocr_max_pages: int = 30
     chunk_mode: str = "boundary"
     chunk_size: int = 300
     overlap: int = 50
@@ -48,6 +56,18 @@ class ProjectConfig:
     reranker_batch_size: int = 8
 
     def __post_init__(self):
+        if self.session_backend not in {"memory","sqlite"}: raise ValueError("Invalid session backend")
+        if type(self.session_ttl) is not int or self.session_ttl<=0: raise ValueError("Invalid session TTL")
+        object.__setattr__(self,"session_db_path",Path(self.session_db_path).resolve())
+        if self.session_db_path==Path(self.index_path).resolve() or any(self.session_db_path==(Path(self.documents_dir)/n).resolve() for n in self.file_names if isinstance(n,str)):
+            raise ValueError("Session database must not overwrite knowledge files")
+        import re
+        if type(self.ocr_enabled) is not bool: raise ValueError("ocr_enabled must be boolean")
+        if not isinstance(self.ocr_language,str) or not re.fullmatch(r"[A-Za-z0-9_]+(?:\+[A-Za-z0-9_]+)*",self.ocr_language):
+            raise ValueError("Invalid OCR language")
+        if not isinstance(self.ocr_command,str) or not self.ocr_command.strip(): raise ValueError("Invalid OCR command")
+        if type(self.ocr_timeout) not in (int,float) or not isfinite(self.ocr_timeout) or self.ocr_timeout<=0: raise ValueError("Invalid OCR timeout")
+        if type(self.ocr_max_pages) is not int or self.ocr_max_pages<=0: raise ValueError("Invalid OCR page limit")
         if type(self.web_search_enabled) is not bool: raise ValueError("web_search_enabled must be boolean")
         if not isinstance(self.web_search_api_key,str): raise ValueError("Invalid web search key")
         if self.web_search_enabled and not self.web_search_api_key.strip():
@@ -101,6 +121,10 @@ class ProjectConfig:
     def to_report(self) -> dict:
         return {
             "model": self.model_name,
+            "session_backend": self.session_backend,"session_ttl":self.session_ttl,
+            "session_db_path":str(self.session_db_path),
+            "ocr_enabled": self.ocr_enabled, "ocr_language": self.ocr_language,
+            "ocr_timeout": self.ocr_timeout, "ocr_max_pages": self.ocr_max_pages,
             "reranker_enabled": self.reranker_enabled,
             "reranker_model": self.reranker_model,
             "reranker_batch_size": self.reranker_batch_size,
@@ -139,6 +163,13 @@ def load_config(env_file=None, environ=None):
     values = dict(dotenv_values(env_file if env_file is not None else PROJECT_ROOT / ".env", interpolate=False))
     values.update(os.environ if environ is None else environ)
     conversions = {
+        "SESSION_BACKEND": ("session_backend", str),
+        "SESSION_TTL": ("session_ttl", int),
+        "OCR_ENABLED": ("ocr_enabled", parse_bool),
+        "OCR_LANGUAGE": ("ocr_language", str),
+        "OCR_TIMEOUT": ("ocr_timeout", float),
+        "OCR_COMMAND": ("ocr_command", str),
+        "OCR_MAX_PAGES": ("ocr_max_pages", int),
         "WEB_SEARCH_ENABLED": ("web_search_enabled", parse_bool),
         "WEB_SEARCH_API_KEY": ("web_search_api_key", str),
         "WEB_SEARCH_TIMEOUT": ("web_search_timeout", float),
@@ -166,7 +197,7 @@ def load_config(env_file=None, environ=None):
                 if suffix == "FILE_NAMES" and not isinstance(json.loads(values[key]), list): raise ValueError()
                 kwargs[field] = convert(values[key])
             except (ValueError, TypeError) as exc: raise ValueError(f"Invalid setting {key}") from exc
-    for suffix, field in (("DOCUMENTS_DIR", "documents_dir"), ("INDEX_PATH", "index_path")):
+    for suffix, field in (("DOCUMENTS_DIR", "documents_dir"), ("INDEX_PATH", "index_path"), ("SESSION_DB_PATH", "session_db_path")):
         key = "AGENT_" + suffix
         if key in values:
             if not values[key]: raise ValueError(f"Missing path for {key}")

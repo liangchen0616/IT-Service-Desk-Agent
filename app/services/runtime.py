@@ -22,8 +22,13 @@ class Runtime:
         self.embedder, self.model = embedder, model
         self._model_injected = model is not None
         self.model_factory = ModelFactory(self.config)
+        self.reports_dir = PROJECT_ROOT / "data" / "reports"
         self.lock = RLock()
-        self.sessions = SessionStore()
+        if self.config.session_backend == "sqlite":
+            from memory.sqlite_sessions import SQLiteSessionStore
+            self.sessions = SQLiteSessionStore(self.config.session_db_path,ttl=self.config.session_ttl)
+        else:
+            self.sessions = SessionStore(ttl=self.config.session_ttl)
         self.agent = None
         self.items = []
         self.reranker = None

@@ -17,6 +17,9 @@ class Document:
 class DocumentLoader:
     """Load text documents from the knowledge base."""
 
+    def __init__(self, ocr=None, ocr_max_pages=30):
+        self.ocr,self.ocr_max_pages=ocr,ocr_max_pages
+
     def load_txt(self, file_path: str) -> Document:
         path = Path(file_path)
 
@@ -76,9 +79,16 @@ class DocumentLoader:
         reader = PdfReader(str(path))
 
         page_texts = []
+        ocr_pages = []
 
         for page_number, page in enumerate(reader.pages, start=1):
             text = page.extract_text() or ""
+            if not text.strip() and self.ocr is not None:
+                if len(ocr_pages)>=self.ocr_max_pages:
+                    from core.exceptions import InvalidDocument
+                    raise InvalidDocument("待识别页数超过 OCR 限制")
+                text=self.ocr.read_page(path,page_number)
+                ocr_pages.append(page_number)
             page_texts.append(text)
 
         content = "\n\n".join(page_texts)
@@ -92,6 +102,7 @@ class DocumentLoader:
             "source": path.name,
             "file_type": "pdf",
             "page_count": len(reader.pages),
+            "ocr_pages": ocr_pages,
         }
 
         return Document(

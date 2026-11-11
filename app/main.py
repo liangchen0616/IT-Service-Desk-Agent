@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
-from app.api import routes_chat, routes_documents, routes_health, routes_sessions
+from app.api import routes_chat, routes_documents, routes_health, routes_sessions, routes_metrics
 from app.services.runtime import Runtime
 from app.middleware import RequestLoggingMiddleware, error_response
-from core.exceptions import SessionNotFound, SessionCapacity, DocumentNotFound, InvalidDocument, LocalModelError, AgentExecutionError
+from core.exceptions import OcrError, SessionNotFound, SessionCapacity, DocumentNotFound, InvalidDocument, LocalModelError, AgentExecutionError
 from core.logging import configure_logging
 
 
@@ -13,8 +13,12 @@ def create_app(runtime=None):
     app.state.runtime = runtime if runtime is not None else Runtime()
     logger = configure_logging()
     app.add_middleware(RequestLoggingMiddleware)
-    for router in (routes_health.router, routes_chat.router, routes_documents.router, routes_sessions.router):
+    for router in (routes_health.router, routes_chat.router, routes_documents.router, routes_sessions.router, routes_metrics.router):
         app.include_router(router)
+
+    @app.exception_handler(OcrError)
+    async def ocr_error(request: Request, exc):
+        return error_response(503,"ocr_unavailable",str(exc))
 
     @app.exception_handler(SessionNotFound)
     async def session_missing(request: Request, exc):

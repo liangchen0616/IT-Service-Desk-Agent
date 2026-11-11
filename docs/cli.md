@@ -32,3 +32,10 @@
 ## 多轮对话
 
 使用 python -m scripts.sessions create 创建会话，再通过 scripts.demo_query 的 --session-id 选项沿用。show / clear / delete 管理历史。完整示例和内存保留范围见 sessions.md。
+
+## 归档与恢复
+
+    python -m scripts.documents archives
+    python -m scripts.documents restore <archive_id>
+
+archive_id 取自归档列表，与普通 document_id 不同。恢复后沿用原 document_id；重复恢复返回不存在，不产生重复副本。当前没有永久清空归档命令。

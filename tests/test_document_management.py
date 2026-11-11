@@ -134,3 +134,74 @@ def test_document_cli_routes_requests_and_rejects_path_injection(monkeypatch, ca
     assert requests == [('GET','/documents'),('GET','/documents/'+identifier),('DELETE','/documents/'+identifier)]
     with pytest.raises(SystemExit): documents.main(['delete','../base'])
     assert len(requests) == 3
+
+
+def test_archive_restore_roundtrip_and_restart(runtime):
+    with TestClient(create_app(runtime)) as client:
+        identifier=upload(client)
+        client.delete('/documents/'+identifier)
+        entries=client.get('/document-archives').json()
+        assert entries['total']==1
+        archive=entries['archives'][0]
+        assert archive['document_id']==identifier and archive['filename']=='same.txt'
+        result=client.post('/document-archives/'+archive['archive_id']+'/restore')
+        assert result.status_code==200,result.text
+        assert result.json()['document_id']==identifier
+        assert client.get('/document-archives').json()['total']==0
+        assert client.post('/chat',json={'question':'unique_secret'}).json()['answered']
+        assert client.post('/document-archives/'+archive['archive_id']+'/restore').status_code==404
+        client.delete('/documents/'+identifier)
+    fresh=Runtime(runtime.config,runtime.uploads,Embedder(),Model())
+    with TestClient(create_app(fresh)) as client:
+        archives=client.get('/document-archives').json()['archives']
+        assert fresh.agent is None
+        assert client.post('/document-archives/'+archives[0]['archive_id']+'/restore').status_code==200
+    restarted=Runtime(runtime.config,runtime.uploads,Embedder(),Model())
+    restarted.ensure_ready()
+    assert sum(i.chunk.metadata.get('document_id')==identifier for i in restarted.items)==1
+    assert restarted.agent.invoke('unique_secret')['result'].answered
+
+
+@pytest.mark.parametrize('failure',['rebuild','rename'])
+def test_restore_failure_keeps_archive_and_active_knowledge(runtime,monkeypatch,failure):
+    with TestClient(create_app(runtime),raise_server_exceptions=False) as client:
+        identifier=upload(client)
+        client.delete('/documents/'+identifier)
+        archive=client.get('/document-archives').json()['archives'][0]['archive_id']
+        agent,items=runtime.agent,runtime.items
+        def fail(*args,**kwargs):raise OSError('simulated failure')
+        if failure=='rebuild':monkeypatch.setattr(runtime,'make_agent',fail)
+        else:monkeypatch.setattr(Path,'rename',fail)
+        assert client.post('/document-archives/'+archive+'/restore').status_code==500
+        assert runtime.agent is agent and runtime.items is items
+        assert client.get('/document-archives').json()['total']==1
+        assert client.get('/documents').json()['total']==0
+
+
+def test_restore_does_not_overwrite_existing_id(runtime):
+    with TestClient(create_app(runtime)) as client:
+        identifier=upload(client)
+        client.delete('/documents/'+identifier)
+        archive=client.get('/document-archives').json()['archives'][0]['archive_id']
+        destination=runtime.uploads/identifier
+        destination.mkdir()
+        (destination/'marker.txt').write_text('do not overwrite')
+        assert client.post('/document-archives/'+archive+'/restore').status_code==400
+        assert (destination/'marker.txt').read_text()=='do not overwrite'
+        assert client.get('/document-archives').json()['total']==1
+
+
+def test_archive_cli_and_unknown_id(runtime,monkeypatch):
+    requests=[]
+    def handle(request):
+        requests.append((request.method,request.url.path))
+        return httpx.Response(200,json={'ok':True})
+    monkeypatch.setattr(documents,'ApiClient',lambda url:ApiClient(url,transport=httpx.MockTransport(handle)))
+    archive='a'*32+'-'+'b'*32
+    assert documents.main(['archives'])==0
+    assert documents.main(['restore',archive])==0
+    assert requests==[('GET','/document-archives'),('POST','/document-archives/'+archive+'/restore')]
+    with pytest.raises(SystemExit):documents.main(['restore','../outside'])
+    with TestClient(create_app(runtime)) as client:
+        assert client.post('/document-archives/'+archive+'/restore').status_code==404
+        assert runtime.agent is None

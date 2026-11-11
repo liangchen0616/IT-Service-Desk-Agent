@@ -42,7 +42,9 @@ class DocumentChunker:
             text = document.content[start:end]
             if not text.strip():
                 continue
-            page_document = Document(text, {**document.metadata, "page": page})
+            metadata={**document.metadata, "page": page}
+            if page in metadata.get("ocr_pages",[]): metadata["extraction_method"]="ocr"
+            page_document = Document(text, metadata)
             for chunk in self._chunk_text(page_document):
                 chunk.start_index += start
                 chunk.end_index += start
